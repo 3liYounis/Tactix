@@ -329,6 +329,5 @@ We welcome contributions! Please follow these steps:
 ---
 
 <div align="center">
-  <p>Made with ❤️ by the Tactix Team</p>
-  <p>⚽ Bringing football players together, one match at a time ⚽</p>
+  <p>⚽ Bringing football players together ⚽</p>
 </div>
