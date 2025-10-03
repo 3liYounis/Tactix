@@ -1,7 +1,7 @@
 # Tactix - Football Match Management App
 
 <div align="center">
-  <img src="tactixMain/assets/images/football.png" alt="Tactix Logo" width="120" height="120"/>
+  <!-- <img src="tactixMain/assets/images/football.png" alt="Tactix Logo" width="120" height="120"/> -->
 
   <h3>🏆 The Ultimate Football Match Experience</h3>
 
@@ -285,11 +285,6 @@ export const API_BASE_URL = 'http://localhost:3000'; // Development
 
 ---
 
-## 📱 Screenshots
-
-<details>
-<summary>Click to view app screenshots</summary>
-
 ### Dashboard
 - Player profile overview
 - Statistics and achievements
@@ -330,27 +325,6 @@ We welcome contributions! Please follow these steps:
 - Test on both iOS and Android
 - Ensure accessibility compliance
 - Update documentation for new features
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- **Expo Team** for the amazing development platform
-- **Firebase** for backend services
-- **React Native Community** for excellent libraries
-- **Football Community** for inspiration and feedback
-
----
-
-## 📞 Support
-
-For support, email [support@tactix.app](mailto:support@tactix.app) or create an issue in the repository.
 
 ---
 
