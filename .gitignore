@@ -3,3 +3,24 @@ Server/package-lock.json
 
 Client/services/firebaseConfig.ts
 Server/serviceAccount.json
+
+/firebase-debug.log
+/firebase-debug.*.log
+.firebaserc
+
+/firebase.json
+*.cache
+hosting/.cache
+
+/functions/node_modules/
+/functions/.env
+/functions/package-lock.json
+
+/firebase-*.zip
+/.firebase/
+/emulator-ui/
+
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
