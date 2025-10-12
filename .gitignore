@@ -1,0 +1,5 @@
+Client/package-lock.json
+Server/package-lock.json
+
+Client/services/firebaseConfig.ts
+Server/serviceAccount.json
