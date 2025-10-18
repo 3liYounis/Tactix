@@ -7,7 +7,7 @@ export const sampleMatch: Match = {
   location: "Cosmmunity Sports Stadium",
   date: new Date(),
   players_count: 22,
-  maxPlayers: 0,
+  maxPlayers: 22,
   isLive: false,
   formation: "",
   teams: [
@@ -27,7 +27,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Golden Glove", level: 2, icon: "🧤" }],
             skills: { PHY: 88, PAC: 65, PAS: 75, DEF: 90, DRI: 55, SHO: 45 },
             physicalAttributes: { age: 28, height: 188, weight: 82 },
-            statistics: { matches_played: 85, matches_won: 48, overall: 70 }
+            statistics: { matches_played: 85, matches_won: 48, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.GK
         },
@@ -43,7 +46,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Iron Wall", level: 2, icon: "🛡️" }],
             skills: { PHY: 85, PAC: 72, PAS: 70, DEF: 88, DRI: 65, SHO: 50 },
             physicalAttributes: { age: 26, height: 185, weight: 78 },
-            statistics: { matches_played: 72, matches_won: 42, overall: 70 }
+            statistics: { matches_played: 72, matches_won: 42, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.DEF
         },
@@ -59,7 +65,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Defender", level: 1, icon: "🔒" }],
             skills: { PHY: 80, PAC: 75, PAS: 68, DEF: 82, DRI: 62, SHO: 45 },
             physicalAttributes: { age: 24, height: 182, weight: 76 },
-            statistics: { matches_played: 35, matches_won: 20, overall: 70 }
+            statistics: { matches_played: 35, matches_won: 20, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.DEF
         },
@@ -75,7 +84,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Defender", level: 1, icon: "🔒" }],
             skills: { PHY: 82, PAC: 70, PAS: 72, DEF: 85, DRI: 68, SHO: 48 },
             physicalAttributes: { age: 25, height: 183, weight: 77 },
-            statistics: { matches_played: 58, matches_won: 33, overall: 70 }
+            statistics: { matches_played: 58, matches_won: 33, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.DEF
         },
@@ -91,7 +103,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Playmaker", level: 2, icon: "🎯" }],
             skills: { PHY: 78, PAC: 80, PAS: 90, DEF: 65, DRI: 85, SHO: 75 },
             physicalAttributes: { age: 27, height: 175, weight: 72 },
-            statistics: { matches_played: 78, matches_won: 45, overall: 70 }
+            statistics: { matches_played: 78, matches_won: 45, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.DEF
         },
@@ -107,7 +122,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Midfielder", level: 1, icon: "⚡" }],
             skills: { PHY: 75, PAC: 78, PAS: 82, DEF: 70, DRI: 80, SHO: 68 },
             physicalAttributes: { age: 23, height: 178, weight: 74 },
-            statistics: { matches_played: 28, matches_won: 16, overall: 70 }
+            statistics: { matches_played: 28, matches_won: 16, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.MID
         },
@@ -123,7 +141,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Midfielder", level: 1, icon: "⚡" }],
             skills: { PHY: 80, PAC: 82, PAS: 78, DEF: 68, DRI: 85, SHO: 72 },
             physicalAttributes: { age: 26, height: 180, weight: 75 },
-            statistics: { matches_played: 65, matches_won: 38, overall: 70 }
+            statistics: { matches_played: 65, matches_won: 38, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.MID
         },
@@ -139,7 +160,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Midfielder", level: 1, icon: "⚡" }],
             skills: { PHY: 77, PAC: 85, PAS: 80, DEF: 62, DRI: 88, SHO: 70 },
             physicalAttributes: { age: 24, height: 176, weight: 73 },
-            statistics: { matches_played: 42, matches_won: 25, overall: 70 }
+            statistics: { matches_played: 42, matches_won: 25, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.MID
         },
@@ -158,7 +182,10 @@ export const sampleMatch: Match = {
             ],
             skills: { PHY: 85, PAC: 88, PAS: 75, DEF: 45, DRI: 82, SHO: 92 },
             physicalAttributes: { age: 24, height: 180, weight: 75 },
-            statistics: { matches_played: 55, matches_won: 35, overall: 70 }
+            statistics: { matches_played: 55, matches_won: 35, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.MID
         },
@@ -174,7 +201,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Striker", level: 2, icon: "🎯" }],
             skills: { PHY: 82, PAC: 85, PAS: 70, DEF: 40, DRI: 80, SHO: 88 },
             physicalAttributes: { age: 25, height: 182, weight: 76 },
-            statistics: { matches_played: 48, matches_won: 28, overall: 70 }
+            statistics: { matches_played: 48, matches_won: 28, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.FWD
         },
@@ -190,7 +220,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Poacher", level: 1, icon: "🥅" }],
             skills: { PHY: 78, PAC: 84, PAS: 68, DEF: 38, DRI: 76, SHO: 86 },
             physicalAttributes: { age: 23, height: 179, weight: 73 },
-            statistics: { matches_played: 18, matches_won: 10, overall: 70 }
+            statistics: { matches_played: 18, matches_won: 10, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.FWD
         },
@@ -206,7 +239,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Poacher", level: 1, icon: "🥅" }],
             skills: { PHY: 78, PAC: 84, PAS: 68, DEF: 38, DRI: 76, SHO: 86 },
             physicalAttributes: { age: 23, height: 179, weight: 73 },
-            statistics: { matches_played: 18, matches_won: 10, overall: 70 }
+            statistics: { matches_played: 18, matches_won: 10, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.FWD
         }
@@ -228,7 +264,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Golden Glove", level: 3, icon: "🧤" }],
             skills: { PHY: 90, PAC: 65, PAS: 75, DEF: 92, DRI: 55, SHO: 40 },
             physicalAttributes: { age: 29, height: 190, weight: 85 },
-            statistics: { matches_played: 120, matches_won: 68, overall: 70 }
+            statistics: { matches_played: 120, matches_won: 68, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.GK
         },
@@ -244,7 +283,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Iron Wall", level: 1, icon: "🛡️" }],
             skills: { PHY: 82, PAC: 70, PAS: 65, DEF: 84, DRI: 60, SHO: 55 },
             physicalAttributes: { age: 22, height: 185, weight: 80 },
-            statistics: { matches_played: 25, matches_won: 15, overall: 70 }
+            statistics: { matches_played: 25, matches_won: 15, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.DEF
         },
@@ -260,7 +302,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Defender", level: 1, icon: "🔒" }],
             skills: { PHY: 83, PAC: 72, PAS: 70, DEF: 86, DRI: 65, SHO: 50 },
             physicalAttributes: { age: 26, height: 184, weight: 79 },
-            statistics: { matches_played: 52, matches_won: 30, overall: 70 }
+            statistics: { matches_played: 52, matches_won: 30, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.DEF
         },
@@ -276,7 +321,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Defender", level: 1, icon: "🔒" }],
             skills: { PHY: 80, PAC: 75, PAS: 68, DEF: 82, DRI: 62, SHO: 45 },
             physicalAttributes: { age: 23, height: 181, weight: 77 },
-            statistics: { matches_played: 32, matches_won: 18, overall: 70 }
+            statistics: { matches_played: 32, matches_won: 18, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.DEF
         },
@@ -292,7 +340,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Playmaker", level: 2, icon: "🎯" }],
             skills: { PHY: 78, PAC: 82, PAS: 88, DEF: 70, DRI: 85, SHO: 72 },
             physicalAttributes: { age: 27, height: 177, weight: 74 },
-            statistics: { matches_played: 68, matches_won: 40, overall: 70 }
+            statistics: { matches_played: 68, matches_won: 40, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.DEF
         },
@@ -308,7 +359,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Midfielder", level: 1, icon: "⚡" }],
             skills: { PHY: 76, PAC: 80, PAS: 82, DEF: 68, DRI: 78, SHO: 70 },
             physicalAttributes: { age: 25, height: 179, weight: 75 },
-            statistics: { matches_played: 45, matches_won: 26, overall: 70 }
+            statistics: { matches_played: 45, matches_won: 26, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.MID
         },
@@ -324,7 +378,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Midfielder", level: 1, icon: "⚡" }],
             skills: { PHY: 74, PAC: 85, PAS: 80, DEF: 65, DRI: 82, SHO: 68 },
             physicalAttributes: { age: 24, height: 175, weight: 72 },
-            statistics: { matches_played: 22, matches_won: 12, overall: 70 }
+            statistics: { matches_played: 22, matches_won: 12, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.MID
         },
@@ -340,7 +397,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Midfielder", level: 1, icon: "⚡" }],
             skills: { PHY: 79, PAC: 78, PAS: 85, DEF: 72, DRI: 80, SHO: 75 },
             physicalAttributes: { age: 26, height: 178, weight: 76 },
-            statistics: { matches_played: 38, matches_won: 22, overall: 70 }
+            statistics: { matches_played: 38, matches_won: 22, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.MID
         },
@@ -356,7 +416,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Top Scorer", level: 2, icon: "⚽" }],
             skills: { PHY: 84, PAC: 87, PAS: 72, DEF: 42, DRI: 83, SHO: 90 },
             physicalAttributes: { age: 28, height: 183, weight: 78 },
-            statistics: { matches_played: 72, matches_won: 44, overall: 70 }
+            statistics: { matches_played: 72, matches_won: 44, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.FWD
         },
@@ -372,7 +435,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Striker", level: 1, icon: "🎯" }],
             skills: { PHY: 81, PAC: 86, PAS: 68, DEF: 38, DRI: 79, SHO: 85 },
             physicalAttributes: { age: 25, height: 180, weight: 74 },
-            statistics: { matches_played: 35, matches_won: 20, overall: 70 }
+            statistics: { matches_played: 35, matches_won: 20, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.FWD
         },
@@ -388,7 +454,10 @@ export const sampleMatch: Match = {
             badges: [{ label: "Finisher", level: 1, icon: "🎯" }],
             skills: { PHY: 79, PAC: 83, PAS: 67, DEF: 36, DRI: 77, SHO: 84 },
             physicalAttributes: { age: 24, height: 181, weight: 75 },
-            statistics: { matches_played: 20, matches_won: 12, overall: 70 }
+            statistics: { matches_played: 20, matches_won: 12, overall: 70 },
+            username: "",
+            friends: [],
+            trend: "up"
           },
           position: Position.FWD
         }

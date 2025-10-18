@@ -1,9 +1,11 @@
 import AnimatedScreen from '@/components/animated/AnimatedScreen';
 import FieldPlayers from '@/components/match/FieldPlayers';
 import MatchInfoCard from '@/components/match/MatchInfoCard';
+import Toggle from '@/components/custom/Toggle';
 import { useTheme } from '@/hooks/useTheme';
 import { Match } from '@/types/match';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { useState } from 'react';
 import PageHeader from '../custom/PageHeader';
 
 interface Props {
@@ -16,6 +18,7 @@ interface Props {
   onStartMatch: () => void;
   onEndMatch: () => void;
   onCancel: () => void;
+  onLeaveMatch: () => void;
   onFieldLayout: (event: any) => void;
 }
 
@@ -29,9 +32,11 @@ export default function ActiveMatchScreen({
   onStartMatch,
   onEndMatch,
   onCancel,
+  onLeaveMatch,
   onFieldLayout
 }: Props) {
   const { colors } = useTheme();
+  const [view, setView] = useState<'info' | 'formation'>('info');
 
   const formatDate = (date: Date) => {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -56,35 +61,50 @@ export default function ActiveMatchScreen({
   return (
     <AnimatedScreen style={[styles.container, { backgroundColor: colors.background }]}>
       <PageHeader title="Active Match" subtitle="Match Details" imageSource={require('@/assets/images/football.png')} />
+
+      <Toggle
+        options={[
+          { value: 'info', label: 'Match Info' },
+          { value: 'formation', label: 'Formation' }
+        ]}
+        value={view}
+        onValueChange={(value) => setView(value as 'info' | 'formation')}
+      />
+
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <MatchInfoCard
-          name={currentMatch.name}
-          code={currentMatch.code}
-          location={currentMatch.location}
-          datePart={datePart}
-          timePart={timePart}
-          onCopyCode={onCopyCode}
-          isHosting={isHosting}
-          isMatchStarted={isMatchStarted}
-          currentCount={currentMatch.players_count}
-          maxPlayers={currentMatch.maxPlayers}
-          onStartMatch={onStartMatch}
-          onEndMatch={onEndMatch}
-          onCancel={onCancel}
-        />
-
-        <FieldPlayers
-          teams={currentMatch.teams}
-          formation={currentMatch.formation}
-          fieldImage={fieldImage}
-          fieldSize={fieldSize}
-          onFieldLayout={onFieldLayout}
-        />
+        {view === 'info' ? (
+          <MatchInfoCard
+            name={currentMatch.name}
+            code={currentMatch.code}
+            location={currentMatch.location}
+            datePart={datePart}
+            timePart={timePart}
+            onCopyCode={onCopyCode}
+            isHosting={isHosting}
+            isMatchStarted={isMatchStarted}
+            currentCount={currentMatch.players_count}
+            maxPlayers={currentMatch.maxPlayers}
+            onStartMatch={onStartMatch}
+            onEndMatch={onEndMatch}
+            onCancel={onCancel}
+            onLeaveMatch={onLeaveMatch}
+          />
+        ) : (
+          <View style={styles.formationContainer}>
+            <FieldPlayers
+              teams={currentMatch.teams}
+              formation={currentMatch.formation}
+              fieldImage={fieldImage}
+              fieldSize={fieldSize}
+              onFieldLayout={onFieldLayout}
+            />
+          </View>
+        )}
       </ScrollView>
     </AnimatedScreen>
   );
@@ -95,8 +115,13 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1 },
   scrollContent: {
     flexGrow: 1,
+    justifyContent: 'center',
     paddingVertical: 10,
     paddingHorizontal: 10,
-    paddingBottom: 100,
+    paddingBottom: 80,
+  },
+  formationContainer: {
+    flex: 1,
+    minHeight: 400,
   },
 });

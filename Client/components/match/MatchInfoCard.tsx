@@ -1,6 +1,7 @@
 import { typography } from '@/constants';
+import CustomButton from '@/components/custom/CustomButton';
 import { useTheme } from '@/hooks/useTheme';
-import { Calendar, Clock, Copy, MapPin, Play, X } from 'lucide-react-native';
+import { Calendar, Clock, Copy, LogOut, MapPin, Play, X } from 'lucide-react-native';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface Props {
@@ -11,110 +12,190 @@ interface Props {
   timePart: string;
   onCopyCode: () => void;
   isHosting?: boolean;
-  isMatchStarted?: boolean;
-  currentCount?: number;
-  maxPlayers?: number;
+  isMatchStarted: boolean;
+  currentCount: number;
+  maxPlayers: number;
   onStartMatch?: () => void;
   onEndMatch?: () => void;
   onCancel?: () => void;
+  onLeaveMatch?: () => void;
 }
 
-export default function MatchInfoCard({ name, code, location, datePart, timePart, onCopyCode, isHosting = false, isMatchStarted = false, currentCount = 0, maxPlayers = 0, onStartMatch, onEndMatch, onCancel }: Props) {
+export default function MatchInfoCard({ name, code, location, datePart, timePart, onCopyCode, isHosting = false, isMatchStarted = false, currentCount, maxPlayers, onStartMatch = () => {}, onEndMatch = () => {}, onCancel = () => {}, onLeaveMatch = () => {} }: Props) {
   const { colors } = useTheme();
   const formattedDate = formatMatchDate(datePart);
 
   return (
     <View style={[styles.card, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
+
       <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.foreground }]}>{name}</Text>
+        <Text style={[styles.matchTitle, { color: colors.foreground }]}>{name}</Text>
         <View style={styles.codeSection}>
-          <TouchableOpacity onPress={onCopyCode} style={[styles.codeContainer, { borderColor: colors.border }]}>
-            <Text style={[styles.codeText, { color: colors.foreground }]}>{code}</Text>
+          <TouchableOpacity onPress={onCopyCode} style={[styles.codeContainer, { borderColor: colors.primary }]}>
+            <Text style={[styles.codeText, { color: colors.primary }]}>{code}</Text>
             <Copy size={16} color={colors.primary} />
           </TouchableOpacity>
         </View>
       </View>
 
-      <View style={styles.detailsWrap}>
-        <View style={styles.detailsRowHorizontal}>
-          <View style={styles.detailRow}>
-            <MapPin size={16} color={colors.muted} />
-            <Text style={[styles.detailText, { color: colors.foreground }]}>{location}</Text>
+      <View style={styles.detailsSection}>
+        <View style={styles.detailItem}>
+          <View style={[styles.detailIcon, { backgroundColor: colors.primary + '20' }]}>
+            <MapPin size={20} color={colors.primary} />
           </View>
-          <View style={styles.detailRow}>
-            <Calendar size={16} color={colors.muted} />
-            <Text style={[styles.detailText, { color: colors.foreground }]}>{formattedDate}</Text>
+          <View style={styles.detailContent}>
+            <Text style={[styles.detailLabel, { color: colors.muted }]}>Location</Text>
+            <Text style={[styles.detailValue, { color: colors.foreground }]}>{location}</Text>
           </View>
-          {Boolean(timePart) && (
-            <View style={styles.detailRow}>
-              <Clock size={16} color={colors.muted} />
-              <Text style={[styles.detailText, { color: colors.foreground }]}>{timePart}</Text>
-            </View>
-          )}
         </View>
+
+        <View style={styles.detailItem}>
+          <View style={[styles.detailIcon, { backgroundColor: colors.primary + '20' }]}>
+            <Calendar size={20} color={colors.primary} />
+          </View>
+          <View style={styles.detailContent}>
+            <Text style={[styles.detailLabel, { color: colors.muted }]}>Date</Text>
+            <Text style={[styles.detailValue, { color: colors.foreground }]}>{formattedDate}</Text>
+          </View>
+        </View>
+
+        {Boolean(timePart) && (
+          <View style={styles.detailItem}>
+            <View style={[styles.detailIcon, { backgroundColor: colors.primary + '20' }]}>
+              <Clock size={20} color={colors.primary} />
+            </View>
+            <View style={styles.detailContent}>
+              <Text style={[styles.detailLabel, { color: colors.muted }]}>Time</Text>
+              <Text style={[styles.detailValue, { color: colors.foreground }]}>{timePart}</Text>
+            </View>
+          </View>
+        )}
+
+        {/* <View style={styles.detailItem}>
+          <View style={[styles.detailIcon, { backgroundColor: colors.primary + '20' }]}>
+            <Text style={[styles.playerCountText, { color: colors.primary }]}>
+              {currentCount}/{maxPlayers}
+            </Text>
+          </View>
+          <View style={styles.detailContent}>
+            <Text style={[styles.detailLabel, { color: colors.muted }]}>Players</Text>
+            <Text style={[styles.detailValue, { color: colors.foreground }]}>
+              {currentCount >= (maxPlayers || 0) ? 'Ready to start!' : `Need ${(maxPlayers || 0) - currentCount} more`}
+            </Text>
+          </View>
+        </View> */}
       </View>
 
-      {true && (
-        <View style={styles.matchActions}>
+        <View style={styles.actionsSection}>
           {!isMatchStarted ? (
-            <TouchableOpacity
-              style={[
-                styles.startButton,
-                {
+            isHosting ? (
+              <CustomButton
+                variant="primary"
+                onPress={currentCount >= (maxPlayers || 0) ? onStartMatch : () => {}}
+                disabled={currentCount < (maxPlayers || 0)}
+                icon={<Play size={20} color={colors.primaryForeground} />}
+                style={{
                   backgroundColor: currentCount >= (maxPlayers || 0) ? colors.primary : colors.ratingRed,
                   opacity: currentCount >= (maxPlayers || 0) ? 1 : 0.6,
-                },
-              ]}
-              onPress={currentCount >= (maxPlayers || 0) ? onStartMatch : undefined}
-              disabled={currentCount < (maxPlayers || 0)}
-            >
-              <Play size={16} color={colors.primaryForeground} />
-              <Text style={[styles.startButtonText, { color: colors.primaryForeground }]}>
+                }}
+              >
                 {currentCount >= (maxPlayers || 0)
                   ? 'Start Match'
                   : `Missing ${(maxPlayers || 0) - currentCount} Players!`}
-              </Text>
-            </TouchableOpacity>
+              </CustomButton>
+            ) : (
+              <View
+                style={[
+                  styles.disabledButton,
+                  {
+                    backgroundColor: currentCount >= (maxPlayers || 0) ? colors.primary + '40' : colors.ratingRed + '40',
+                    borderColor: currentCount >= (maxPlayers || 0) ? colors.primary : colors.ratingRed,
+                  },
+                ]}
+              >
+                <Text style={[styles.disabledButtonText, { color: colors.foreground }]}>
+                  {currentCount == maxPlayers
+                    ? 'Host will start the match soon!'
+                    : `Waiting For ${maxPlayers - currentCount} More players`}
+                </Text>
+              </View>
+            )
           ) : (
-            <TouchableOpacity
-              style={[styles.startButton, { backgroundColor: colors.ratingRed }]}
-              onPress={onEndMatch}
-            >
-              <Play size={16} color={colors.primaryForeground} />
-              <Text style={[styles.startButtonText, { color: colors.primaryForeground }]}>End Match</Text>
-            </TouchableOpacity>
+            isHosting ? (
+              <CustomButton
+                variant="primary"
+                onPress={onEndMatch}
+                icon={<Play size={20} color={colors.primaryForeground} />}
+                style={{ backgroundColor: colors.ratingRed }}
+              >
+                End Match
+              </CustomButton>
+            ) : (
+              <View
+                style={[
+                  styles.disabledButton,
+                  { backgroundColor: colors.ratingRed + '40', borderColor: colors.ratingRed },
+                ]}
+              >
+                <Text style={[styles.disabledButtonText, { color: colors.muted }]}>
+                  Match in progress - Ask host to end
+                </Text>
+              </View>
+            )
           )}
-          <TouchableOpacity
-            style={[styles.cancelMatchButton, { backgroundColor: colors.accent }]}
-            onPress={onCancel}
-          >
-            <X size={16} color={colors.muted} />
-            <Text style={[styles.cancelMatchText, { color: colors.muted }]}>Cancel</Text>
-          </TouchableOpacity>
+
+          {isHosting ? (
+            <CustomButton
+              variant="outline"
+              onPress={onCancel}
+              icon={<X size={20} color={colors.muted} />}
+            >
+              Cancel Match
+            </CustomButton>
+          ) : (
+            <CustomButton
+              variant="danger"
+              onPress={onLeaveMatch}
+              icon={<LogOut size={20} color={colors.foreground} />}
+              textStyle={{ color: colors.foreground }}
+            >
+              Leave Match
+            </CustomButton>
+          )}
         </View>
-      )}
     </View>
   );
 }
-
-// Styles
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 20,
-    padding: 10,
-    marginBottom: 5,
+    borderRadius: 24,
+    padding: 24,
+    marginBottom: 16,
     borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 5,
+    marginBottom: 24,
   },
-  title: {
-    fontSize: 20,
-    flex: 1,
+  invitationTitle: {
+    fontSize: 16,
+    fontFamily: typography.fontFamily.kalamBold,
+    marginBottom: 8,
+    opacity: 0.8,
+  },
+  matchTitle: {
+    fontSize: 28,
     fontFamily: typography.fontFamily.jetbrainsMonoBold,
+    textAlign: 'center',
+    marginBottom: 16,
   },
   codeSection: {
     marginBottom: 0,
@@ -123,74 +204,69 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 5,
-    paddingVertical: 5,
-    borderRadius: 10,
-    borderWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 16,
+    borderWidth: 2,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    minHeight: 20,
   },
   codeText: {
-    fontSize: 15,
-    letterSpacing:3,
-    marginRight: 4,
+    fontSize: 18,
+    letterSpacing: 4,
+    marginRight: 8,
     fontFamily: typography.fontFamily.spaceGroteskBold,
   },
-  detailsWrap: {
-    marginBottom: 10,
-    justifyContent: 'space-between',
-    width: '100%',
+  detailsSection: {
+    marginBottom: 24,
   },
-  detailsRowHorizontal: {
+  detailItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-    rowGap: 10,
-    flexWrap: 'wrap',
+    marginBottom: 16,
+    paddingVertical: 4,
   },
-  detailRow: {
-    flexDirection: 'row',
+  detailIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     alignItems: 'center',
-    justifyContent: 'flex-start',
-    columnGap: 6,
-    minWidth: 0,
+    justifyContent: 'center',
+    marginRight: 16,
   },
-  detailText: {
-    fontSize: 13,
-    flexShrink: 1,
+  detailContent: {
+    flex: 1,
+  },
+  detailLabel: {
+    fontSize: 12,
     fontFamily: typography.fontFamily.kalamBold,
+    marginBottom: 2,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
-  matchActions: {
-    flexDirection: 'row',
-    gap: 15,
+  detailValue: {
+    fontSize: 16,
+    fontFamily: typography.fontFamily.spaceGroteskBold,
   },
-  startButton: {
-    flex: 1,
-    flexDirection: 'row',
+  playerCountText: {
+    fontSize: 16,
+    fontFamily: typography.fontFamily.spaceGroteskBold,
+    fontWeight: 'bold',
+  },
+  actionsSection: {
+    gap: 12,
+  },
+  disabledButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    borderRadius: 8,
-    gap: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 16,
+    borderWidth: 2,
   },
-  startButtonText: {
-    fontSize: 14,
+  disabledButtonText: {
+    fontSize: 16,
     fontFamily: typography.fontFamily.jetbrainsMonoBold,
-
-  },
-  cancelMatchButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    borderRadius: 8,
-    gap: 8,
-  },
-  cancelMatchText: {
-    fontSize: 14,
-    fontFamily: typography.fontFamily.jetbrainsMonoBold,
+    textAlign: 'center',
   },
 });
 function formatMatchDate(datePart: string): string {
