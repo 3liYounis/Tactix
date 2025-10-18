@@ -7,6 +7,7 @@ import Error from '@/components/animated/Error';
 import Loading from '@/components/animated/Loading';
 import CustomButton from '@/components/custom/CustomButton';
 import PageHeader from '@/components/custom/PageHeader';
+import Toggle from '@/components/custom/Toggle';
 import { typography } from '@/constants/typography';
 import { useAuth } from '@/hooks/useAuth';
 import { usePlayer } from '@/hooks/usePlayer';
@@ -53,21 +54,14 @@ export default function Profile() {
     return (
       <AnimatedScreen style={[styles.root, { backgroundColor: colors.background }]}>
         <PageHeader title="Profile" subtitle="Your player card and statistics" imageSource={require('@/assets/images/trophy.png')} />
-        <View style={[styles.toggleWrap, { backgroundColor: colors.cardBackground, borderColor: colors.border }]}>
-          <TouchableOpacity
-            style={[styles.toggleBtn, { borderRightColor: colors.border }, view === 'card' && { backgroundColor: colors.primary }]}
-            onPress={() => setView('card')}
-          >
-            <Text style={[styles.toggleBtnText, view === 'card' ? { color: colors.primaryForeground } : { color: colors.foreground }]}>Player Card </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.toggleBtn, view === 'stats' && { backgroundColor: colors.primary }]}
-            onPress={() => setView('stats')}
-          >
-            <Text style={[styles.toggleBtnText, view === 'stats' ? { color: colors.primaryForeground } : { color: colors.foreground }]}>Statistics</Text>
-          </TouchableOpacity>
-        </View>
+        <Toggle<'card' | 'stats'>
+          options={[
+            { value: 'card', label: 'Player Card' },
+            { value: 'stats', label: 'Statistics' }
+          ]}
+          value={view}
+          onValueChange={setView}
+        />
 
         <ScrollView
           contentContainerStyle={styles.cardContainer}
@@ -112,21 +106,8 @@ export default function Profile() {
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  toggleWrap: {
-    flexDirection: 'row',
-    margin: 10,
-    borderRadius: 12,
-    overflow: 'hidden',
-    borderWidth: 1,
-  },
-  toggleBtn: { flex: 1, paddingVertical: 10, alignItems: 'center' },
   cardContainer: {
     padding: 10,
-  },
-  toggleBtnText:{
-    fontFamily: typography.fontFamily.spaceGroteskBold,
-    fontSize: 16,
-    letterSpacing: 0.5
   },
   StatsContainer: {
     gap: 12,
