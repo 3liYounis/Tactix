@@ -8,7 +8,7 @@ interface Props {
   disabled?: boolean;
   height?: number;
   width?: number;
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   icon?: ReactNode;
   iconAfter?: ReactNode;
@@ -63,10 +63,11 @@ export default function CustomButton({
           ...baseStyle,
           backgroundColor: colors.accent,
         };
-      case 'ghost':
+      case 'danger':
         return {
           ...baseStyle,
-          backgroundColor: 'transparent',
+          backgroundColor: colors.ratingRed,
+          ...shadows.sm,
         };
       default:
         return baseStyle;
@@ -81,8 +82,8 @@ export default function CustomButton({
         return colors.foreground;
       case 'secondary':
         return colors.foreground;
-      case 'ghost':
-        return colors.primary;
+      case 'danger':
+        return colors.ratingRed;
       default:
         return colors.primaryForeground;
     }
