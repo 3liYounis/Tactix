@@ -14,64 +14,86 @@ export default function QuoteCard({ quote }: Props) {
     <AnimatedCard style={[
       styles.quoteCard,
       {
-        backgroundColor: colors.accent,
+        backgroundColor: colors.cardBackground,
         borderColor: colors.border,
-        shadowColor: colors.foreground,
       }
     ]}>
       <View style={styles.cardHeader}>
-        <View style={[styles.iconContainer, { backgroundColor: colors.chart4 }]}>
-          <Quote size={18} color={colors.foreground} />
+        <View style={[styles.iconContainer, { backgroundColor: colors.primary + '20' }]}>
+          <Quote size={20} color={colors.primary} />
         </View>
-        <Text style={[
-          styles.quoteTitle,
-          {
-            color: colors.foreground,
-          },
-        ]}>Football Quote</Text>
+        <Text style={[styles.quoteTitle, { color: colors.foreground }]}>
+          Daily Inspiration
+        </Text>
       </View>
-      <Text style={[styles.quoteText, { color: colors.foreground }]}>
-        "{quote}"
-      </Text>
+      <View style={styles.quoteContainer}>
+        <Text style={[styles.quoteText, { color: colors.foreground }]}>
+          "{quote}"
+        </Text>
+      </View>
+      <View style={styles.quoteFooter}>
+        <View style={[styles.decorativeLine, { backgroundColor: colors.primary }]} />
+        <Text style={[styles.footerText, { color: colors.muted }]}>
+          Football Wisdom
+        </Text>
+        <View style={[styles.decorativeLine, { backgroundColor: colors.primary }]} />
+      </View>
     </AnimatedCard>
   );
 }
 
 const styles = StyleSheet.create({
   quoteCard: {
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 20,
+    borderRadius: 20,
+    padding: 24,
+    marginBottom: 0,
     borderWidth: 1,
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
     elevation: 8,
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   iconContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
   quoteTitle: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 18,
     flex: 1,
     fontFamily: typography.fontFamily.jetbrainsMonoBold,
-    letterSpacing: 0.1,
+  },
+  quoteContainer: {
+    marginBottom: 20,
   },
   quoteText: {
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: 16,
     fontFamily: typography.fontFamily.kalamBold,
     textAlign: 'center',
+  },
+  quoteFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  decorativeLine: {
+    height: 2,
+    width: 30,
+    borderRadius: 1,
+  },
+  footerText: {
+    fontSize: 12,
+    fontFamily: typography.fontFamily.spaceGroteskBold,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
 });
