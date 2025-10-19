@@ -1,7 +1,9 @@
+import { typography } from '@/constants';
 import { useTheme } from '@/hooks/useTheme';
 import { usePathname, useRouter } from 'expo-router';
 import { Home, IdCardLanyard, Users, Volleyball } from 'lucide-react-native';
 import React, { useEffect, useRef } from 'react';
+import { StyleSheet } from 'react-native';
 import { Animated, Dimensions, Text, TouchableOpacity, View } from 'react-native';
 
 const { width } = Dimensions.get('window');
@@ -44,8 +46,6 @@ export default function AnimatedTabBar() {
     router.push(tab.route as any);
   };
 
-  const tabWidth = (width) / tabs.length;
-
   return (
     <View style={{
       position: 'absolute',
@@ -87,8 +87,8 @@ export default function AnimatedTabBar() {
             <View style={{
               justifyContent: 'center',
               alignItems: 'center',
-              width: 45,
-              height: 45,
+              width: 50,
+              height: 50,
               zIndex: 3,
               gap: 6,
             }}>
@@ -96,7 +96,7 @@ export default function AnimatedTabBar() {
                 size={22}
                 color={isActive ? colors.primary : colors.muted}
               />
-              <Text style={{ fontSize: 12, fontWeight: 'bold', color: isActive ? colors.primary : colors.muted }}>{tab.title}</Text>
+              <Text style={[styles.text, { color: isActive ? colors.primary : colors.muted }]}>{tab.title}</Text>
             </View>
           </TouchableOpacity>
         );
@@ -104,3 +104,10 @@ export default function AnimatedTabBar() {
     </View>
   );
 }
+const styles = StyleSheet.create({
+  text: {
+    fontSize: 12,
+    letterSpacing: 0.5,
+    fontFamily: typography.fontFamily.jetbrainsMonoBold,
+  },
+});
