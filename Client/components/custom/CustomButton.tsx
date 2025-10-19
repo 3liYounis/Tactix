@@ -83,7 +83,7 @@ export default function CustomButton({
       case 'secondary':
         return colors.foreground;
       case 'danger':
-        return colors.ratingRed;
+        return colors.primaryForeground;
       default:
         return colors.primaryForeground;
     }

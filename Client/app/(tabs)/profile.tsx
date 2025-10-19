@@ -13,6 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePlayer } from '@/hooks/usePlayer';
 import { useTheme } from '@/hooks/useTheme';
 import { Position } from '@/types/player';
+import { LogOut } from 'lucide-react-native';
 import { useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -54,16 +55,17 @@ export default function Profile() {
     return (
       <AnimatedScreen style={[styles.root, { backgroundColor: colors.background }]}>
         <PageHeader title="Profile" subtitle="Your player card and statistics" imageSource={require('@/assets/images/trophy.png')} />
-        <Toggle<'card' | 'stats'>
+        <Toggle
           options={[
             { value: 'card', label: 'Player Card' },
             { value: 'stats', label: 'Statistics' }
           ]}
           value={view}
-          onValueChange={setView}
+          onValueChange={(value) => setView(value as 'card' | 'stats')}
         />
 
         <ScrollView
+          style={styles.scrollView}
           contentContainerStyle={styles.cardContainer}
           showsVerticalScrollIndicator={false}
         >
@@ -71,7 +73,7 @@ export default function Profile() {
             <PlayerCard player={user}/>
           ) : (
             <View style={styles.StatsContainer}>
-              <SectionCard title="Performance Overview">
+              {/* <SectionCard title="Performance Overview">
                 <KPIGrid
                   data={[
                     { value: user.statistics.matches_played, label: 'Total Matches', color: colors.primary },
@@ -80,7 +82,7 @@ export default function Profile() {
                     // { value: user.statistics.assists, label: 'Assists', color: colors.primary },
                   ]}
                 />
-              </SectionCard>
+              </SectionCard> */}
 
               <SectionCard title="Skill Ratings">
                 <SkillRatings skills={player?.skills} barMax={barMax} />
@@ -95,9 +97,9 @@ export default function Profile() {
                   ]}
                 />
               </SectionCard>
+              <CustomButton variant="danger" icon={<LogOut size={20} color={colors.foreground} />} onPress={() => signOut()} >Sign Out</CustomButton>
             </View>
           )}
-          <CustomButton onPress={() => signOut()} >Sign Out</CustomButton>
         </ScrollView>
       </AnimatedScreen>
     );
@@ -106,11 +108,17 @@ export default function Profile() {
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
+  scrollView: {
+    flex: 1,
+    marginBottom: 80,
+  },
   cardContainer: {
     padding: 10,
+    paddingBottom: 20,
   },
   StatsContainer: {
-    gap: 12,
-    marginBottom:80
+    gap: 20,
+    justifyContent: 'center',
+
   }
 })
