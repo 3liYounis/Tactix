@@ -7,17 +7,16 @@ import { useAllPlayers } from '@/hooks/useAllPlayers';
 import { useFriends } from '@/hooks/useFriends';
 import { usePlayer } from '@/hooks/usePlayer';
 import { useTheme } from '@/hooks/useTheme';
+import { FirestoreService } from '@/services/firestoreService';
+import { useAuth } from '@/context/AuthContext';
 import { Player } from '@/types/player';
 import { Search } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
-import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
-
-interface Props {
-  onAddPlayer?: () => void
-}
+import React, { useMemo, useState } from 'react';
+import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const FILTERS = [
-  { id: 'All', label: 'All Players', backgroundColor: colors.foreground, borderColor: colors.border, foregroundColor: colors.background },
+  { id: 'Friends', label: 'Friends', backgroundColor: colors.ratingGreen, borderColor: colors.ratingGreen, foregroundColor: colors.background },
+  { id: 'Invitations', label: 'Invitations', backgroundColor: colors.ratingYellow, borderColor: colors.ratingYellow, foregroundColor: colors.background },
   { id: 'GK', label: 'Goalkeepers', backgroundColor: colors.GKBackgroundColor, borderColor: colors.GKBorderColor, foregroundColor: colors.GKForeground },
   { id: 'DEF', label: 'Defenders', backgroundColor: colors.DEFBackgroundColor, borderColor: colors.DEFBorderColor, foregroundColor: colors.DEFForeground },
   { id: 'MID', label: 'Midfielders', backgroundColor: colors.MIDBackgroundColor, borderColor: colors.MIDBorderColor, foregroundColor: colors.MIDForeground },
@@ -25,13 +24,45 @@ const FILTERS = [
 ]
 
 
-export default function PlayersDirectory({ onAddPlayer }: Props) {
+export default function PlayersDirectory() {
   const { player } = usePlayer();
+  const { user } = useAuth();
   const { friends, isLoading: friendsLoading, addFriend, removeFriend } = useFriends();
   const { players: allPlayers, isLoading: allPlayersLoading } = useAllPlayers();
   const { colors } = useTheme();
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<string>('All');
+  const [filter, setFilter] = useState<string>('Friends');
+  const [sentInvitations, setSentInvitations] = useState<any[]>([]);
+  const [receivedInvitations, setReceivedInvitations] = useState<any[]>([]);
+  const firestoreService = FirestoreService.getInstance();
+
+  React.useEffect(() => {
+    if (!user?.id) return;
+
+    // Cleanup old invitations when component mounts
+    // firestoreService.cleanupOldInvitations().then(result => {
+    //   if (result.success) {
+    //     console.log('Cleaned up old invitations');
+    //   } else {
+    //     console.error('Failed to cleanup old invitations:', result.error);
+    //   }
+    // });
+
+    const unsubscribeSent = firestoreService.subscribeToSentInvitations(
+      user.id,
+      (invitations) => setSentInvitations(invitations)
+    );
+
+    const unsubscribeReceived = firestoreService.subscribeToReceivedInvitations(
+      user.id,
+      (invitations) => setReceivedInvitations(invitations)
+    );
+
+    return () => {
+      unsubscribeSent();
+      unsubscribeReceived();
+    };
+  }, [user?.id]);
 
   const friendsAsPlayers: (Player & { uid: string; color: string; status: 'online' | 'away' | 'offline' | string })[] = useMemo(() => {
     return friends.map(friend => ({
@@ -41,46 +72,136 @@ export default function PlayersDirectory({ onAddPlayer }: Props) {
     }));
   }, [friends]);
 
-  // Convert all players to Player format for discovery
-  // const allPlayersAsPlayers: (Player & { uid: string; color: string; status: 'online' | 'away' | 'offline' | string })[] = useMemo(() => {
-  //   return allPlayers.map(player => ({
-  //     ...player,
-  //     color: getPositionColor(player.position),
-  //     status: 'online' as const,
-  //   }));
-  // }, [allPlayers]);
+  const allPlayersAsPlayers: (Player & { uid: string; color: string; status: 'online' | 'away' | 'offline' | string })[] = useMemo(() => {
+    return allPlayers.map(player => ({
+      ...player,
+      color: getPositionColor(player.position),
+      status: 'online' as const,
+    }));
+  }, [allPlayers]);
+
   const playersToShow = useMemo(() => {
-    if (filter === 'All') {
-      const allPlayersExcludingSelf = friendsAsPlayers.filter(player => player.username !== player?.username);
-
-      const combinedPlayers = [...allPlayersExcludingSelf];
-
-      friendsAsPlayers.forEach(friend => {
-        if (!combinedPlayers.some(player => player.username === friend.username)) {
-          combinedPlayers.push(friend);
-        }
-      });
-
-      return combinedPlayers;
-    } else {
+    if (filter === 'Friends') {
       return friendsAsPlayers;
+    } else if (filter === 'Invitations') {
+      const invitationPlayerIds = [
+        ...sentInvitations.map(inv => inv.recipientId),
+        ...receivedInvitations.map(inv => inv.senderId)
+      ];
+      const friendUsernames = friendsAsPlayers.map(friend => friend.username);
+      return allPlayersAsPlayers.filter(p =>
+        invitationPlayerIds.includes(p.uid) &&
+        !friendUsernames.includes(p.username)
+      );
     }
-  }, [filter, friendsAsPlayers, player?.username]);
-// }, [filter, allPlayersAsPlayers, friendsAsPlayers, player?.username]);
+    else
+      return friendsAsPlayers.filter(p => p.position === filter);
+  }, [filter, friendsAsPlayers, allPlayersAsPlayers, sentInvitations, receivedInvitations]);
 
-  const players = useFilteredPlayers(search, filter, playersToShow);
+
+  const playersWithSearch = useMemo(() => {
+    if (search.trim()) {
+      if (filter === 'Friends') {
+        const searchResults = allPlayersAsPlayers.filter(p => p.username !== player?.username);
+        return searchResults;
+      }
+      else
+        return playersToShow;
+    }
+    return playersToShow;
+  }, [search, filter, playersToShow, allPlayersAsPlayers, player?.username]);
+
+  const players = useFilteredPlayers(search, filter, playersWithSearch);
 
   const handleAddFriend = async (friendId: string) => {
     const result = await addFriend(friendId);
-    if (!result.success) {
+    if (result.success) {
+      const playerToRemove = allPlayers.find(p => p.uid === friendId);
+      if (playerToRemove) {
+        setSentInvitations(prev => prev.filter(username => username !== playerToRemove.username));
+        setReceivedInvitations(prev => prev.filter(username => username !== playerToRemove.username));
+      }
+    }
+    else {
       console.error('Failed to add friend:', result.error);
     }
   };
 
   const handleRemoveFriend = async (friendId: string) => {
+    if (!user?.id) return;
+
     const result = await removeFriend(friendId);
-    if (!result.success) {
+    if (result.success) {
+      const deleteInvitationsResult = await firestoreService.deleteInvitationsBetweenUsers(user.id, friendId);
+      if (deleteInvitationsResult.success) {
+        console.log('Successfully removed friend and deleted invitations');
+      } else {
+        console.error('Failed to delete invitations:', deleteInvitationsResult.error);
+      }
+    } else {
       console.error('Failed to remove friend:', result.error);
+    }
+  };
+
+  const handleSendInvitation = async (playerUsername: string) => {
+    if (!user?.id) return;
+
+    const targetPlayer = allPlayers.find(p => p.username === playerUsername);
+    if (!targetPlayer) return;
+
+    const result = await firestoreService.sendInvitation(user.id, targetPlayer.uid);
+    // if (result.success) {
+    //   console.log('Invitation sent to:', playerUsername);
+    // } else {
+    //   console.error('Failed to send invitation:', result.error);
+    // }
+  };
+
+  const handleAcceptInvitation = async (playerUsername: string) => {
+    const invitation = receivedInvitations.find(inv => {
+      const senderPlayer = allPlayers.find(p => p.uid === inv.senderId);
+      return senderPlayer?.username === playerUsername;
+    });
+
+    if (!invitation) return;
+
+    const result = await firestoreService.acceptInvitation(invitation.id);
+    // if (result.success) {
+    //   console.log('Accepted invitation from:', playerUsername);
+    // } else {
+    //   console.error('Failed to accept invitation:', result.error);
+    // }
+  };
+
+  const handleDeclineInvitation = async (playerUsername: string) => {
+    const invitation = receivedInvitations.find(inv => {
+      const senderPlayer = allPlayers.find(p => p.uid === inv.senderId);
+      return senderPlayer?.username === playerUsername;
+    });
+
+    if (!invitation) return;
+
+    const result = await firestoreService.declineInvitation(invitation.id);
+    if (result.success) {
+      console.log('Declined invitation from:', playerUsername);
+    } else {
+      console.error('Failed to decline invitation:', result.error);
+    }
+  };
+
+  const handleCancelInvitation = async (playerUsername: string) => {
+    const invitation = sentInvitations.find(inv => {
+      const recipientPlayer = allPlayers.find(p => p.uid === inv.recipientId);
+      return recipientPlayer?.username === playerUsername;
+    });
+
+    if (!invitation) return;
+
+    const result = await firestoreService.cancelInvitation(invitation.id);
+    if (result.success) {
+      console.log('Cancelled invitation to:', playerUsername);
+    } else {
+      console.error('Failed to cancel invitation:', result.error);
     }
   };
 
@@ -106,23 +227,32 @@ export default function PlayersDirectory({ onAddPlayer }: Props) {
           <Search size={16} color={colors.muted} />
           <TextInput
             style={[styles.searchTextInput, { color: colors.foreground }]}
-            placeholder={filter === 'All' ? "Search Players . . ." : "Search Friends . . ."}
+            placeholder={
+              filter === 'Friends' ? "Search all players . . ." :
+              filter === 'Invitations' ? "Search Invitations . . ." :
+              `Search ${filter}s . . .`
+            }
             placeholderTextColor={colors.muted}
             value={search}
             onChangeText={setSearch}
           />
         </View>
-          {/* <TouchableOpacity onPress={onAddPlayer} style={[styles.addButton, { backgroundColor: colors.backgroundLight }]}>
-          <UserPlus size={20} color={colors.foreground} />
-          </TouchableOpacity> */}
       </View>
 
       <FriendsFilters filters={FILTERS} activeId={filter} onChange={setFilter} />
 
       {players.length === 0 ? (
         <EmptyState
-          title={filter === 'All' ? "No players found :(" : "No friends were found :("}
-          subtitle={filter === 'All' ? "Try adjusting your search or discover new players" : "Try adjusting your search or add new friends"}
+          title={
+            filter === 'Friends' ? (search.trim() ? "No players found :(" : "No friends were found :(") :
+            filter === 'Invitations' ? "No invitations found :(" :
+            `No ${filter}s found :(`
+          }
+          subtitle={
+            filter === 'Friends' ? (search.trim() ? "Try adjusting your search to find new players" : "Try adjusting your search or add new friends") :
+            filter === 'Invitations' ? "No pending invitations at the moment" :
+            `Try adjusting your search or add new ${filter.toLowerCase()}s`
+          }
         />
       )
       :
@@ -130,15 +260,31 @@ export default function PlayersDirectory({ onAddPlayer }: Props) {
         <FlatList
           data={players}
           keyExtractor={(item) => item.uid}
-          renderItem={({ item, index }) => (
-            <PlayerRow
-              index={index}
-              player={item}
-              onAddFriend={() => handleAddFriend(item.uid)}
-              onRemoveFriend={() => handleRemoveFriend(item.uid)}
-              isFriend={friends.some(friend => friend.uid === item.uid)}
-            />
-          )}
+          renderItem={({ item, index }) => {
+            const isFriend = friends.some(friend => friend.uid === item.uid);
+            const invitationStatus = sentInvitations.some(inv => {
+              const recipientPlayer = allPlayers.find(p => p.uid === inv.recipientId);
+              return recipientPlayer?.username === item.username;
+            }) ? 'sent' : receivedInvitations.some(inv => {
+              const senderPlayer = allPlayers.find(p => p.uid === inv.senderId);
+              return senderPlayer?.username === item.username;
+            }) ? 'received' : 'none';
+
+            return (
+              <PlayerRow
+                index={index}
+                player={item}
+                onAddFriend={() => handleAddFriend(item.uid)}
+                onRemoveFriend={() => handleRemoveFriend(item.uid)}
+                onSendInvitation={() => handleSendInvitation(item.username)}
+                onAcceptInvitation={() => handleAcceptInvitation(item.username)}
+                onDeclineInvitation={() => handleDeclineInvitation(item.username)}
+                onCancelInvitation={() => handleCancelInvitation(item.username)}
+                isFriend={isFriend}
+                invitationStatus={invitationStatus}
+              />
+            );
+          }}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
         />
@@ -162,9 +308,8 @@ function useFilteredPlayers(search: string, filter: string, players: (Player & {
   return useMemo(() => {
     const s = search.trim().toLowerCase()
     return players.filter((p) => {
-      const bySearch = !s || p.name.toLowerCase().includes(s)
-      const byFilter = filter === 'All' || p.position === filter
-      return bySearch && byFilter
+      const bySearch = !s || p.name.toLowerCase().includes(s) || p.username.toLowerCase().includes(s)
+      return bySearch
     })
   }, [search, filter, players])
 }
