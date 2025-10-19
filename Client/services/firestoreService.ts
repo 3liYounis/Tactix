@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, onSnapshot, query, setDoc, Unsubscribe, where } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, query, setDoc, Unsubscribe, where } from 'firebase/firestore';
 import { Player, Position } from '../types/player';
 import { db } from './firebaseManager';
 
@@ -121,17 +121,34 @@ export class FirestoreService {
   async removeFriend(playerId: string, friendId: string): Promise<{ success: boolean; error?: string }> {
     try {
       const playerRef = doc(collection(db, 'players'), playerId);
-      const playerSnap = await getDoc(playerRef);
+      const friendRef = doc(collection(db, 'players'), friendId);
+
+      const [playerSnap, friendSnap] = await Promise.all([
+        getDoc(playerRef),
+        getDoc(friendRef)
+      ]);
 
       if (!playerSnap.exists()) {
         return { success: false, error: 'Player not found' };
       }
 
-      const playerData = playerSnap.data() as Player;
-      const currentFriends = playerData.friends || [];
-      const updatedFriends = currentFriends.filter(id => id !== friendId);
+      if (!friendSnap.exists()) {
+        return { success: false, error: 'Friend not found' };
+      }
 
-      await setDoc(playerRef, { friends: updatedFriends }, { merge: true });
+      const playerData = playerSnap.data() as Player;
+      const friendData = friendSnap.data() as Player;
+
+      const playerFriends = playerData.friends || [];
+      const friendFriends = friendData.friends || [];
+
+      const updatedPlayerFriends = playerFriends.filter(id => id !== friendId);
+      const updatedFriendFriends = friendFriends.filter(id => id !== playerId);
+
+      await Promise.all([
+        setDoc(playerRef, { friends: updatedPlayerFriends }, { merge: true }),
+        setDoc(friendRef, { friends: updatedFriendFriends }, { merge: true })
+      ]);
 
       return { success: true };
     } catch (error: any) {
@@ -271,6 +288,149 @@ export class FirestoreService {
       },
       (error) => {
         console.error('Players by level subscription error:', error);
+        callback([], error.message);
+      }
+    );
+  }
+
+  async sendInvitation(senderId: string, recipientId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const invitationRef = doc(collection(db, 'invitations'));
+      const invitationData = {
+        id: invitationRef.id,
+        senderId,
+        recipientId,
+        status: 'pending',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      await setDoc(invitationRef, invitationData);
+      return { success: true };
+    }
+    catch (error: any) {
+      return { success: false, error: error?.message ?? 'Failed to send invitation' };
+    }
+  }
+
+  async acceptInvitation(invitationId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const invitationRef = doc(collection(db, 'invitations'), invitationId);
+      const invitationSnap = await getDoc(invitationRef);
+      if (!invitationSnap.exists())
+        return { success: false, error: 'Invitation not found' };
+
+      const invitationData = invitationSnap.data();
+      await this.addFriend(invitationData.senderId, invitationData.recipientId);
+      await this.addFriend(invitationData.recipientId, invitationData.senderId);
+      await deleteDoc(invitationRef);
+      return { success: true };
+    }
+    catch (error: any) {
+      return { success: false, error: error?.message ?? 'Failed to accept invitation' };
+    }
+  }
+
+  async declineInvitation(invitationId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const invitationRef = doc(collection(db, 'invitations'), invitationId);
+      await deleteDoc(invitationRef);
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error?.message ?? 'Failed to decline invitation' };
+    }
+  }
+
+  async cancelInvitation(invitationId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const invitationRef = doc(collection(db, 'invitations'), invitationId);
+      await deleteDoc(invitationRef);
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error?.message ?? 'Failed to cancel invitation' };
+    }
+  }
+
+  async deleteInvitationsBetweenUsers(userId1: string, userId2: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const invitationsRef = collection(db, 'invitations');
+      const q1 = query(
+        invitationsRef,
+        where('senderId', '==', userId1),
+        where('recipientId', '==', userId2)
+      );
+      const q2 = query(
+        invitationsRef,
+        where('senderId', '==', userId2),
+        where('recipientId', '==', userId1)
+      );
+      const [snapshot1, snapshot2] = await Promise.all([
+        getDocs(q1),
+        getDocs(q2)
+      ]);
+      const deletePromises: Promise<void>[] = [];
+      snapshot1.forEach((doc) => {
+        deletePromises.push(deleteDoc(doc.ref));
+      });
+
+      snapshot2.forEach((doc) => {
+        deletePromises.push(deleteDoc(doc.ref));
+      });
+
+      await Promise.all(deletePromises);
+      return { success: true };
+    }
+    catch (error: any) {
+      return { success: false, error: error?.message ?? 'Failed to delete invitations' };
+    }
+  }
+
+  subscribeToSentInvitations(userId: string, callback: (invitations: any[], error?: string) => void): Unsubscribe {
+    const invitationsRef = collection(db, 'invitations');
+    const q = query(
+      invitationsRef,
+      where('senderId', '==', userId),
+      where('status', '==', 'pending')
+    );
+
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const invitations: any[] = [];
+        snapshot.forEach((doc) => {
+          if (doc.exists()) {
+            invitations.push({ id: doc.id, ...doc.data() });
+          }
+        });
+        callback(invitations, undefined);
+      },
+      (error) => {
+        console.error('Sent invitations subscription error:', error);
+        callback([], error.message);
+      }
+    );
+  }
+
+  subscribeToReceivedInvitations(userId: string, callback: (invitations: any[], error?: string) => void): Unsubscribe {
+    const invitationsRef = collection(db, 'invitations');
+    const q = query(
+      invitationsRef,
+      where('recipientId', '==', userId),
+      where('status', '==', 'pending')
+    );
+
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const invitations: any[] = [];
+        snapshot.forEach((doc) => {
+          if (doc.exists()) {
+            invitations.push({ id: doc.id, ...doc.data() });
+          }
+        });
+        callback(invitations, undefined);
+      },
+      (error) => {
+        console.error('Received invitations subscription error:', error);
         callback([], error.message);
       }
     );
