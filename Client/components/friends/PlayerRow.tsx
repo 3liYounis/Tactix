@@ -3,8 +3,8 @@ import { Player } from '@/types/player';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeInUp, FadeOut, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Position from '../custom/Position';
-import { UserPlus, UserMinus, Check, X, Clock } from 'lucide-react-native';
 import { typography } from '@/constants';
+import { UserPlus, UserMinus, Check, X, Clock } from 'lucide-react-native';
 
 interface Props {
   index: number;
