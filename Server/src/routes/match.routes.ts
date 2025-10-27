@@ -1,35 +1,19 @@
 import { Router } from "express";
-
+import { createMatch, cancelMatch, startMatch, endMatch,
+         joinMatch, leaveMatch, submitSurvey} from "../controllers/match.controller";
 const router = Router();
 
 // HOST
-router.post("/create", (req, res) => {
-  res.json({ message: "POST /match/create" });
-});
-
-router.delete("/cancel", (req, res) => {
-  res.json({ message: `DELETE /match/cancel` });
-});
-
-router.post("/start", (req, res) => {
-  res.json({ message: `POST /match/start` });
-});
-
-router.post("/end", (req, res) => {
-  res.json({ message: `POST /match/end/` });
-});
+router.post("/create", createMatch);
+router.delete("/cancel", cancelMatch);
+router.post("/start", startMatch);
+router.post("/end", endMatch);
 
 // PLAYER
-router.post("/join", (req, res) => {
-  res.json({ message: "POST /match/join" });
-});
-
-router.delete("/leave", (req, res) => {
-  res.json({ message: "DELETE /match/leave" });
-});
+router.post("/join", joinMatch);
+router.delete("/leave", leaveMatch);
 
 // SURVEY
-router.post("/survey", (req, res) => {
-  res.json({ message: "POST /survey" });
-});
+router.post("/survey", submitSurvey);
+
 export default router;
