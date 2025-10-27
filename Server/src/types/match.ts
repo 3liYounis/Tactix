@@ -19,16 +19,18 @@ export interface Team {
   color: string;
   players: TeamPlayer[];
 }
-
-export interface Match {
+export interface MatchInfo {
   name: string;
-  code: string;
   location: string;
   date: Date | string;
-  time?: string;
+  time: string;
+  formation: string;
+}
+export interface Match {
+  match_information: MatchInfo
+  code: string;
   players_count: number;
   maxPlayers: number;
   isLive: boolean;
-  formation: string;
   teams: Team[];
 }
