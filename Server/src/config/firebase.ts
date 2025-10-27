@@ -1,10 +1,11 @@
 import { firebaseConfig } from './firebaseConfig';
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { getDatabase } from 'firebase/database'
+import { getDatabase, ref} from 'firebase/database'
 
 const app = initializeApp(firebaseConfig);
-const firestoreDB = getFirestore(app)
-const realtimeDB = getDatabase(app)
 
-export default {firestoreDB, realtimeDB};
+export const firestoreDB = getFirestore(app)
+export const realtimeDB = getDatabase(app)
+
+export const getRealtimeRef = (path: string) => ref(realtimeDB, path);
