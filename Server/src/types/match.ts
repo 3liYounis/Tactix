@@ -27,9 +27,13 @@ export interface MatchInfo {
   maxPlayers: number;
 }
 export interface Match {
-  match_information: MatchInfo
-  code: string;
-  players_count: number;
+  name: string;
+  location: string;
+  date: Date | string;
+  time: string;
+  code: number;
+  capacity: number;
+  count: number;
   started: boolean;
   teams: Team[];
 }

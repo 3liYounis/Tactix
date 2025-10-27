@@ -1,36 +1,41 @@
 import { Match, MatchInfo } from "../types/match";
 import {getRealtimeRef} from "../config/firebase"
-import { push } from "firebase/database";
+import { set, remove, update } from "firebase/database";
 
-const matchesRef = getRealtimeRef("MATCH");
 const generatedCodes = new Set<number>();
 
 export const createMatch = (hostId: string, match_information: MatchInfo) => {
-    const code = generateMatchCode().toString()
+    const code = generateMatchCode()
     const match: Match = {
-        match_information: match_information,
+        name: match_information.name,
+        location: match_information.location,
+        date: match_information.date,
+        time: match_information.time,
+        capacity: 0,
         code: code,
-        players_count: 0,
+        count: 0,
         started: false,
         teams: [],
     }
-    console.log(match)
-    push(matchesRef, match)
+    const matchRef = getRealtimeRef(`MATCH/${code}`)
+    set(matchRef, match)
     return { hostId, match_information, status: "created" };
 };
 
 export const cancelMatch = (matchId: string) => {
-
+    const matchRef = getRealtimeRef(`MATCH/${matchId}`)
+    remove(matchRef)
     return { matchId, status: "canceled" };
 };
 
 export const startMatch = (matchId: string) => {
-
+    const matchRef = getRealtimeRef(`MATCH/${matchId}`)
+    update(matchRef, {started: true})
     return { matchId, status: "started" };
 };
 
 export const endMatch = (matchId: string) => {
-
+    // TODO Generate & Send Surveys
     return { matchId, status: "ended" };
 };
 
