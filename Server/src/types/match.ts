@@ -24,13 +24,12 @@ export interface MatchInfo {
   location: string;
   date: Date | string;
   time: string;
-  formation: string;
+  maxPlayers: number;
 }
 export interface Match {
   match_information: MatchInfo
   code: string;
   players_count: number;
-  maxPlayers: number;
-  isLive: boolean;
+  started: boolean;
   teams: Team[];
 }

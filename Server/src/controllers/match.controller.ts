@@ -3,9 +3,9 @@ import * as matchService from "../services/match.service";
 
 // HOST
 export const createMatch = (req: Request, res: Response) => {
-  const { hostId, matchSettings } = req.body;
+  const { hostId, match_info } = req.body;
 
-  const result = matchService.createMatch(hostId, matchSettings);
+  const result = matchService.createMatch(hostId, match_info);
 
   res.json({ message: "Match created", ...result });
 };
