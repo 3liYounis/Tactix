@@ -1,9 +1,11 @@
-import admin from 'firebase-admin';
-var serviceAccount = require("../../serviceAccount.json");
+import { firebaseConfig } from './firebaseConfig';
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
+import { getDatabase } from 'firebase/database'
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+const app = initializeApp(firebaseConfig);
+const firestoreDB = getFirestore(app)
+const realtimeDB = getDatabase(app)
 
-export const db = admin.firestore();
-export default admin;
+console.log(app, firestoreDB, realtimeDB)
+export default {firestoreDB, realtimeDB};

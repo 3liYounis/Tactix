@@ -2,6 +2,7 @@ Client/package-lock.json
 Server/package-lock.json
 
 Client/services/firebaseConfig.ts
+Server/src/config/firebaseConfig.ts
 Server/serviceAccount.json
 
 /firebase-debug.log
@@ -24,3 +25,4 @@ hosting/.cache
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+node_modules/

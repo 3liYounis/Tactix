@@ -25,7 +25,6 @@ app.use('/match', matchRoutes);
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
-  console.log(`📝 Match create endpoint: http://localhost:${PORT}/match/create`);
 });
 
 export default app;
