@@ -1,4 +1,4 @@
-import { Player, Position } from "@/types/player";
+import { Player, Position } from "@shared/types";
 
 export const player: Player = {
     name: "Lionel Messi",

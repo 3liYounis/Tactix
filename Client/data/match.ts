@@ -1,9 +1,8 @@
-import { Match } from "@/types/match";
-import { Position } from "@/types/player";
+import { Match, Position } from "@shared/types";
 
 export const sampleMatch: Match = {
   name: "Sunday League Final",
-  code: "SLF2025",
+  code: 2025,
   location: "Cosmmunity Sports Stadium",
   date: new Date(),
   players_count: 22,

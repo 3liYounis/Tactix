@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, ImageBackground } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
-import { Position } from '@/types/player';
-import { Team } from '@/types/match';
+import { Position } from "@shared/types";
+import { Team } from '../../../Shared/types';
 import { colors, typography } from '@/constants';
 
 interface Props {
@@ -61,9 +61,9 @@ export default function FieldPlayers({
 
               const playerAtSlot = orderedPlayers[slotIndex];
               if (playerAtSlot) {
-                const initials = playerAtSlot.player.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                const initials = playerAtSlot.name.split(' ').map(n => n[0]).join('').toUpperCase();
                 const color = getPositionColorHelper(playerAtSlot.position, colors.primary);
-                const nameParts = playerAtSlot.player.name.trim().split(/\s+/);
+                const nameParts = playerAtSlot.name.trim().split(/\s+/);
                 const firstName = nameParts[0] || '';
                 const lastName = nameParts.slice(1).join(' ');
                 const displayName = lastName ? `${lastName.at(0)}. ${firstName}` : firstName;

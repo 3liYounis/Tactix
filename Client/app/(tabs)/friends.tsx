@@ -9,7 +9,7 @@ import { usePlayer } from '@/hooks/usePlayer';
 import { useTheme } from '@/hooks/useTheme';
 import { FirestoreService } from '@/services/firestoreService';
 import { useAuth } from '@/context/AuthContext';
-import { Player } from '@/types/player';
+import { Player } from "@shared/types";
 import { Search } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -95,7 +95,7 @@ export default function PlayersDirectory() {
       );
     }
     else
-      return friendsAsPlayers.filter(p => p.position === filter);
+      return friendsAsPlayers.filter(p => p.favourite_position === filter);
   }, [filter, friendsAsPlayers, allPlayersAsPlayers, sentInvitations, receivedInvitations]);
 
 

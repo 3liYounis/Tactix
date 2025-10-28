@@ -9,7 +9,7 @@ import { StaticQuestions } from "@/data/questions";
 import { useTheme } from "@/hooks/useTheme";
 import { FirestoreService } from "@/services/firestoreService";
 import { Form } from "@/types/form";
-import { Position } from "@/types/player";
+import { Position } from "@shared/types";
 import { Redirect } from "expo-router";
 import { Ruler, Target, User, Weight } from "lucide-react-native";
 import { useState } from "react";
@@ -137,7 +137,7 @@ async function createPlayer(form: Form, userId: string, email: string) {
 
     const playerData = {
       name: form.name,
-      position: positionMap[form.position],
+      favourite_position: positionMap[form.position],
       physicalAttributes: {
         age: form.age,
         height: form.height,

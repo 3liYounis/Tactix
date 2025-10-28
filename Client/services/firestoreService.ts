@@ -1,5 +1,5 @@
 import { collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, query, setDoc, Unsubscribe, where } from 'firebase/firestore';
-import { Player, Position } from '../types/player';
+import { Player, Position } from "@shared/types";
 import { db } from './firebaseManager';
 
 export class FirestoreService {
@@ -12,7 +12,7 @@ export class FirestoreService {
     return FirestoreService.instance;
   }
 
-  async createPlayer(userId: string, email: string, name?: string, playerData?: Partial<Player>): Promise<{ success: boolean; error?: string }> {
+  async createPlayer(userId: string, email: string, name: string, playerData: Partial<Player>): Promise<{ success: boolean; error?: string }> {
     try {
       const defaultPlayerData: Player = {
         name: name || email.split('@')[0],
@@ -21,8 +21,7 @@ export class FirestoreService {
         level: 1,
         streak: 0,
         profilePicture: '',
-        position: Position.MID,
-        badges: [],
+        favourite_position: playerData.favourite_position || Position.MID,
         skills: {
           PHY: 60,
           PAC: 60,
@@ -45,6 +44,13 @@ export class FirestoreService {
         initials: this.generateInitials(name || email.split('@')[0]),
         friends: [],
         trend: 'stable' as const,
+        id: userId,
+        positions: {
+          [Position.GK]: 60,
+          [Position.DEF]: 60,
+          [Position.MID]: 60,
+          [Position.FWD]: 60,
+        }
       };
 
 

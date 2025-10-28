@@ -3,7 +3,7 @@ import FieldPlayers from '@/components/match/FieldPlayers';
 import MatchInfoCard from '@/components/match/MatchInfoCard';
 import Toggle from '@/components/custom/Toggle';
 import { useTheme } from '@/hooks/useTheme';
-import { Match } from '@/types/match';
+import { Match } from "@shared/types";
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useState } from 'react';
 import PageHeader from '../custom/PageHeader';
@@ -80,15 +80,15 @@ export default function ActiveMatchScreen({
         {view === 'info' ? (
           <MatchInfoCard
             name={currentMatch.name}
-            code={currentMatch.code}
+            code={currentMatch.code.toString()}
             location={currentMatch.location}
             datePart={datePart}
             timePart={timePart}
             onCopyCode={onCopyCode}
             isHosting={isHosting}
             isMatchStarted={isMatchStarted}
-            currentCount={currentMatch.players_count}
-            maxPlayers={currentMatch.maxPlayers}
+            currentCount={currentMatch.count}
+            maxPlayers={currentMatch.capacity}
             onStartMatch={onStartMatch}
             onEndMatch={onEndMatch}
             onCancel={onCancel}

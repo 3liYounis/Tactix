@@ -8,14 +8,13 @@ import Loading from '@/components/animated/Loading';
 import CustomButton from '@/components/custom/CustomButton';
 import PageHeader from '@/components/custom/PageHeader';
 import Toggle from '@/components/custom/Toggle';
-import { typography } from '@/constants/typography';
 import { useAuth } from '@/hooks/useAuth';
 import { usePlayer } from '@/hooks/usePlayer';
 import { useTheme } from '@/hooks/useTheme';
-import { Position } from '@/types/player';
+import { Position } from "@shared/types";
 import { LogOut } from 'lucide-react-native';
 import { useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 
 
 const positionRatings: Record<Position, Record<string, number>> = {

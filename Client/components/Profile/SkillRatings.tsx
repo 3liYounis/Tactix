@@ -1,5 +1,5 @@
 import { typography } from '@/constants';
-import { Skills } from '@/types/player';
+import { Skills } from "@shared/types";
 import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
 

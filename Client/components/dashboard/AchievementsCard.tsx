@@ -1,7 +1,7 @@
 import AnimatedCard from '@/components/animated/AnimatedCard';
 import { typography } from '@/constants/typography';
 import { useTheme } from '@/hooks/useTheme';
-import { Badge } from '@/types/player';
+import { Badge } from "@shared/types";
 import { Award } from 'lucide-react-native';
 import { StyleSheet, Text, View } from 'react-native';
 

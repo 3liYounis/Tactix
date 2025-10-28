@@ -3,7 +3,7 @@ import { typography } from '@/constants/typography';
 import { CircleStar, Flame, Zap, Trophy } from 'lucide-react-native';
 import { Image, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
-import { Player } from '../../types/player';
+import { Player } from "@shared/types";
 import Position from '../custom/Position';
 
 interface Props {
@@ -60,7 +60,7 @@ export default function ProfileCard({ player, style }: Props) {
           </View>
           <View style={styles.statContent}>
             <Text style={[styles.statValue, { color: colors.foreground }]}>
-              {player.position}
+              {player.favourite_position}
             </Text>
             <Text style={[styles.statLabel, { color: colors.muted }]}>
               Position

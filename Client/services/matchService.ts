@@ -1,5 +1,5 @@
 import { API_CONFIG } from '@/config/api';
-import { Match } from '@/types/match';
+import { Match } from "@shared/types";
 
 const API_URL = API_CONFIG.baseURL;
 

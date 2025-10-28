@@ -1,5 +1,5 @@
 import { useTheme } from '@/hooks/useTheme';
-import { Player } from '@/types/player';
+import { Player } from "@shared/types";
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeInUp, FadeOut, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Position from '../custom/Position';

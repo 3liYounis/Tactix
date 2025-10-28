@@ -1,5 +1,5 @@
 import { useTheme } from '@/hooks/useTheme';
-import { Player } from '@/types/player';
+import { Player } from "@shared/types";
 import { formatDate } from '@/utils/dateUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, Text, View } from 'react-native';
@@ -29,7 +29,7 @@ export default function PlayerCard({player}: Props) {
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={[styles.overall, { color: colors.muted, fontFamily: typography.fontFamily.spaceGroteskBold }]}>{player.statistics.overall}</Text>
             </View>
-              <Text style={[styles.subtle, { color: colors.muted, fontFamily: typography.fontFamily.spaceGroteskBold }]}>{player.position}</Text>
+              <Text style={[styles.subtle, { color: colors.muted, fontFamily: typography.fontFamily.spaceGroteskBold }]}>{player.favourite_position}</Text>
           </View>
           <View style={{ alignItems: 'flex-end'}}>
               <Text style={[styles.club, { color: colors.primary, fontFamily: typography.fontFamily.spaceGroteskBold }]}>Tactix FC</Text>
@@ -67,13 +67,13 @@ export default function PlayerCard({player}: Props) {
 
         <Animated.View entering={FadeInUp.duration(400)} layout={LinearTransition.duration(220)} style={styles.achievements}>
           <Text style={[styles.achievementsTitle, { color: colors.muted, fontFamily: typography.fontFamily.spaceGroteskBold, fontWeight: typography.fontWeight.semibold }]}>Recent Achievements</Text>
-          <Animated.View entering={FadeInUp.duration(420)} layout={LinearTransition.duration(220)} style={styles.achievementsRow}>
+          {/* <Animated.View entering={FadeInUp.duration(420)} layout={LinearTransition.duration(220)} style={styles.achievementsRow}>
             {player.badges.slice(0, 3).map((a) => (
               <View key={a.label} style={[styles.achip, { backgroundColor: colors.ratingYellow + '20', borderColor: colors.ratingYellow + '50' }]}>
                 <Text style={[styles.achipText, { color: colors.ratingYellow, fontFamily: typography.fontFamily.kalamBold, fontWeight: typography.fontWeight.medium }]}>{a.label}</Text>
               </View>
             ))}
-          </Animated.View>
+          </Animated.View> */}
         </Animated.View>
 
         <Animated.View entering={FadeInUp.duration(440)} layout={LinearTransition.duration(220)} style={styles.quickRow}>

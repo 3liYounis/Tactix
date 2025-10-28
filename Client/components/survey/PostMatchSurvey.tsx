@@ -6,7 +6,7 @@ import SkillAssessment from '@/components/survey/SkillAssessment';
 import SurveyHeader from '@/components/survey/SurveyHeader';
 import SurveyProgress from '@/components/survey/SurveyProgress';
 import { useTheme } from '@/hooks/useTheme';
-import { Player } from '@/types/player';
+import { Player } from "@shared/types";
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';

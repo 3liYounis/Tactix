@@ -8,7 +8,7 @@ import { usePlayer } from '@/hooks/usePlayer';
 import { useTheme } from '@/hooks/useTheme';
 import { useState } from 'react';
 import { sampleMatch } from '../../data/match';
-import { Match } from '../../types/match';
+import { Match } from "@shared/types";
 import * as matchService from '@/services/matchService';
 
 export default function MatchRoom() {
@@ -72,13 +72,13 @@ export default function MatchRoom() {
 
       const newMatch: Match = {
         name: hostForm.name,
-        code: matchCode,
+        code: 12345,
         location: hostForm.location,
         date: matchDate,
         time: hostForm.time,
-        players_count: 1,
-        maxPlayers: hostForm.maxPlayers,
-        isLive: true,
+        count: 1,
+        capacity: hostForm.maxPlayers,
+        started: true,
         formation: `${hostForm.players_count}v${hostForm.players_count}`,
         teams: [
           {

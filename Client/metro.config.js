@@ -1,10 +1,14 @@
-// Learn more https://docs.expo.io/guides/customizing-metro
-const { getDefaultConfig } = require('expo/metro-config');
+const { getDefaultConfig } = require("expo/metro-config");
+const path = require("path");
 
-/** @type {import('expo/metro-config').MetroConfig} */
-const config = getDefaultConfig(__dirname, {
-  // [Web-only]: Enables CSS support in Metro.
-  isCSSEnabled: true,
-});
+const config = getDefaultConfig(__dirname);
+
+config.watchFolders = [
+  path.resolve(__dirname, "..", "Shared")
+];
+
+config.resolver.extraNodeModules = {
+  "@shared": path.resolve(__dirname, "../Shared")
+};
 
 module.exports = config;
