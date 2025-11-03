@@ -4,7 +4,6 @@ import * as matchService from "../services/match.service";
 // HOST
 export const createMatch = (req: Request, res: Response) => {
   const { hostId, match_info } = req.body;
-
   const result = matchService.createMatch(hostId, match_info);
 
   res.json({ message: "Match created", ...result });
@@ -32,6 +31,14 @@ export const endMatch = (req: Request, res: Response) => {
   const result = matchService.endMatch(matchId);
 
   res.json({ message: `Match ${matchId} ended`, ...result });
+};
+
+export const swap = (req: Request, res: Response) => {
+  const { playerId1, playerId2, matchId } = req.body;
+
+  const result = matchService.swap(playerId1, playerId2, matchId);
+
+  res.json({ message: `Players Swapped`, ...result });
 };
 
 // PLAYER

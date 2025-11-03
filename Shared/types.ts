@@ -42,6 +42,7 @@ export interface Player {
   friends: string[];
   trend: 'up' | 'down' | 'stable';
   positions: PositionsMap;
+  matchCode: string;
 }
 export interface TeamPlayer {
   id: string;
@@ -49,6 +50,7 @@ export interface TeamPlayer {
   profilePicture: string;
   initials: string;
   overall: number;
+  positions: PositionsMap;
   position: Position;
 }
 
@@ -78,6 +80,7 @@ export interface Match {
   started: boolean;
   teams: Team[];
 }
+export type PositionsCapacities = { [key in Position]: number };
 export interface Badge {
   label: string;
   level: number;
