@@ -61,12 +61,14 @@ export default function FieldPlayers({
 
               const playerAtSlot = orderedPlayers[slotIndex];
               if (playerAtSlot) {
-                const initials = playerAtSlot.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                const initials = playerAtSlot.initials;
                 const color = getPositionColorHelper(playerAtSlot.position, colors.primary);
                 const nameParts = playerAtSlot.name.trim().split(/\s+/);
                 const firstName = nameParts[0] || '';
                 const lastName = nameParts.slice(1).join(' ');
-                const displayName = lastName ? `${lastName.at(0)}. ${firstName}` : firstName;
+                const number = nameParts.slice(2).join(' ');
+                console.log(number)
+                const displayName = lastName ? `${lastName.at(0)}. ${firstName} - ${number}` : firstName;
                 return (
                   <View key={`player-${teamIndex}-${slotIndex}`} style={[styles.playerField, actualPosition]}>
                     <View style={[styles.playerCircle, { backgroundColor: color }]}>
@@ -118,14 +120,15 @@ const styles = StyleSheet.create({
     width: 50,
   },
   playerCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 45,
+    height: 45,
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
   },
   playerInitials: {
     color: 'white',
+    fontFamily: typography.fontFamily.interSemiBold,
     fontSize: 14,
   },
   playerName: {
@@ -153,13 +156,13 @@ const styles = StyleSheet.create({
 function getPlayerPositionsHelper(formation: string) {
   const positions: Array<{ top?: number; bottom?: number; left?: number }> = [];
   const depthGK = 1;
-  const depthDEF = 11;
-  const depthFWD = 39;
+  const depthDEF = 15;
+  const depthFWD = 37;
 
   const formationMap: Record<string, { def: number; mid: number; fwd: number }> = {
     '5v5': { def: 2, mid: 0, fwd: 2 },
     '6v6': { def: 2, mid: 1, fwd: 2 },
-    '7v7': { def: 2, mid: 2, fwd: 2 },
+    '7v7': { def: 3, mid: 1, fwd: 2 },
     '8v8': { def: 3, mid: 2, fwd: 2 },
     '9v9': { def: 3, mid: 2, fwd: 3 },
     '10v10': { def: 3, mid: 3, fwd: 3 },
@@ -167,10 +170,10 @@ function getPlayerPositionsHelper(formation: string) {
   };
 
   const counts = formationMap[formation] ?? formationMap['11v11'];
-  const margin = 8;
-  const defaultGap = 27;
+  const margin = 20;
+  const defaultGap = 35;
   const spread = (n: number): number[] => {
-    if (n <= 1) return [50];
+    if (n <= 1) return [43.5];
     const maxGap = (100 - 2 * margin) / (n - 1);
     const gap = Math.min(defaultGap, maxGap);
     const start = 43.5 - ((n - 1) * gap) / 2;

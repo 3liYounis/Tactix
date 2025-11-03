@@ -7,7 +7,7 @@ import { useToastContext } from '@/context/ToastContext';
 import { usePlayer } from '@/hooks/usePlayer';
 import { useTheme } from '@/hooks/useTheme';
 import { useState } from 'react';
-import { sampleMatch } from '../../data/match';
+import { sampleMatch14 } from '../../data/match';
 import { Match } from "@shared/types";
 import * as matchService from '@/services/matchService';
 
@@ -32,9 +32,9 @@ export default function MatchRoom() {
   const [joinForm, setJoinForm] = useState({
     gameCode: ''
   });
-  const fieldImage = isDark ? require('../../assets/images/field_dark.png')
+  const fieldImage = isDark ? require('../../assets/images/field_light.png')
                             : require('../../assets/images/field_light.png');
-  const sampleMatchData: Match = sampleMatch;
+  const sampleMatchData: Match = sampleMatch14;
   const copyRoomCode = () => {
     if (currentMatch) {
       showToast('Match code copied to clipboard', 'info');
@@ -219,7 +219,8 @@ export default function MatchRoom() {
         if (w !== fieldSize.width || h !== fieldSize.height) {
           setFieldSize({ width: w, height: h });
         }
-      }}
-    />
+      } } onLeaveMatch={function (): void {
+        throw new Error('Function not implemented.');
+      } }    />
   );
 }
