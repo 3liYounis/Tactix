@@ -6,16 +6,22 @@ import { useTheme } from '../../hooks/useTheme';
 
 interface Props {
   value: number;
+  unit: string;
+  placeHolder: string;
   onChangeValue: (value: number) => void;
   min?: number;
   max?: number;
+  step?:number;
 }
 
 export default function AgeInput({
   value,
+  unit,
+  placeHolder,
   onChangeValue,
   min = 16,
-  max = 50
+  max = 50,
+  step = 1
 }: Props) {
   const { colors } = useTheme();
   const [isFocused, setIsFocused] = useState(false);
@@ -29,14 +35,14 @@ export default function AgeInput({
 
   const handleIncrement = () => {
     if (value < max) {
-      const newValue = value + 1;
+      const newValue = value + step;
       onChangeValue(newValue);
     }
   };
 
   const handleDecrement = () => {
     if (value > min) {
-      const newValue = value - 1;
+      const newValue = value - step;
       onChangeValue(newValue);
     }
   };
@@ -103,7 +109,7 @@ export default function AgeInput({
             textAlign="center"
             maxLength={2}
           />
-          <Text style={[styles.unit, { color: colors.muted }]}>y</Text>
+          <Text style={[styles.unit, { color: colors.muted }]}>{unit.at(0)}</Text>
         </View>
 
         <TouchableOpacity
@@ -124,7 +130,7 @@ export default function AgeInput({
 
       <View style={[styles.rangeHint, { backgroundColor: colors.primary }]}>
         <Text style={[styles.rangeText, { color: colors.primaryForeground }]}>
-          Age range: {min}-{max} years
+          {placeHolder}: {min}-{max} {unit}
         </Text>
       </View>
     </View>

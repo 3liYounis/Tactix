@@ -1,5 +1,5 @@
 import RegisterLayout from "@/components/Layouts/RegisterLayout";
-import AgeInput from "@/components/custom/AgeInput";
+import AgeInput from "@/components/custom/NumericInput";
 import CustomButton from "@/components/custom/CustomButton";
 import CustomInput from "@/components/custom/CustomInput";
 import PositionSelector from "@/components/custom/PositionSelector";
@@ -87,6 +87,8 @@ export default function register() {
         {step === 1 && (
           <AgeInput
             value={form.age}
+            placeHolder="Age Range"
+            unit="years"
             onChangeValue={(value) => setForm(prev => ({ ...prev, age: value }))}
           />
         )}
