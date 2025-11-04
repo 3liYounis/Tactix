@@ -8,7 +8,7 @@ import { usePlayer } from '@/hooks/usePlayer';
 import { useTheme } from '@/hooks/useTheme';
 import { useState } from 'react';
 import { sampleMatch14 } from '../../data/match';
-import { Match } from "@shared/types";
+import { Match, MatchInfo } from "@shared/types";
 import * as matchService from '@/services/matchService';
 
 export default function MatchRoom() {
@@ -22,12 +22,11 @@ export default function MatchRoom() {
   const [showJoinForm, setShowJoinForm] = useState(false);
   const [showSurvey, setShowSurvey] = useState(false);
   const [fieldSize, setFieldSize] = useState({ width: 0, height: 0 });
-  const [hostForm, setHostForm] = useState({
-    name: '',
-    location: '',
-    time: '',
-    players_count: 7,
-    maxPlayers: 14
+  const [hostForm, setHostForm] = useState<MatchInfo>({
+    name: "",
+    location: "",
+    date: new Date(),
+    capacity: 10,
   });
   const [joinForm, setJoinForm] = useState({
     gameCode: ''
@@ -54,57 +53,20 @@ export default function MatchRoom() {
     setIsMatchStarted(false);
     showToast('Survey completed! Thanks for your feedback.', 'success');
   };
-
-  const generateMatchCode = () => {
-    const code = `M${hostForm.players_count}V${hostForm.players_count}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
-    return code;
-  };
-
   const createMatch = async () => {
-    if (!hostForm.name.trim() || !hostForm.location.trim() || !hostForm.time.trim()) {
-      showToast('Please fill in all required fields', 'error');
-      return;
-    }
-
     try {
-      const matchDate = new Date();
-      const matchCode = generateMatchCode();
-
-      const newMatch: Match = {
-        name: hostForm.name,
-        code: 12345,
-        location: hostForm.location,
-        date: matchDate,
-        time: hostForm.time,
-        count: 1,
-        capacity: hostForm.maxPlayers,
-        started: true,
-        formation: `${hostForm.players_count}v${hostForm.players_count}`,
-        teams: [
-          {
-            name: "Team 1",
-            color: "Red",
-            players: []
-          },
-          {
-            name: "Team 2",
-            color: "Blue",
-            players: []
-          }
-        ]
-      };
-
-      const response = await matchService.createMatch(newMatch);
-
-      if (response.success) {
-        setCurrentMatch(newMatch);
+      const response = await matchService.createMatch(hostForm);
+      if (response) {
+        setCurrentMatch(sampleMatchData);
         setIsHosting(true);
         setShowHostForm(false);
-        showToast(`Match Created! Code: ${newMatch.code}`, 'success');
-      } else {
+        showToast(`Match Created! Code: ${response.code}`, 'success');
+      }
+      else {
         showToast('Failed to create match on server', 'error');
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Error creating match:', error);
       showToast('Error creating match. Please try again.', 'error');
     }
@@ -118,9 +80,8 @@ export default function MatchRoom() {
     setHostForm({
       name: '',
       location: '',
-      time: '',
-      players_count: 7,
-      maxPlayers: 14
+      date: new Date(),
+      capacity: 10,
     });
   };
 
@@ -132,12 +93,14 @@ export default function MatchRoom() {
     setShowHostForm(true);
   };
 
-  const joinExistingMatch = () => {
+  const joinExistingMatch = async () => {
     if (!joinForm.gameCode.trim()) {
       showToast('Please enter a game code', 'error');
       return;
     }
-    setCurrentMatch(sampleMatchData);
+    const match = await matchService.joinMatch(joinForm.gameCode, player!.id)
+    setCurrentMatch(sampleMatch14);
+
     setIsMatchStarted(false);
     setShowJoinForm(false);
     setJoinForm({ gameCode: '' });
@@ -151,16 +114,12 @@ export default function MatchRoom() {
     setHostForm(prev => ({ ...prev, location: text }));
   };
 
-  const handleTimeChange = (text: string) => {
-    setHostForm(prev => ({ ...prev, time: text }));
+  const handleTimeChange = (date: Date) => {
+    setHostForm(prev => ({ ...prev, date: date }));
   };
 
-  const handleFormationChange = (value: string) => {
-    setHostForm(prev => ({
-      ...prev,
-      players_count: parseInt(value),
-      maxPlayers: parseInt(value) * 2
-    }));
+  const handleFormationChange = (value: number) => {
+    setHostForm(prev => ({ ...prev, capacity: value }));
   };
 
   const handleJoinCodeChange = (text: string) => {

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { FirestoreService } from '../services/firestoreService';
-import { Player } from '../types/player';
+import { Player } from '@shared/types';
 
 export const usePlayer = () => {
   const { user, isLoggedIn } = useAuth();

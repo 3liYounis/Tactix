@@ -3,18 +3,18 @@ import * as matchService from "../services/match.service";
 
 // HOST
 export const createMatch = (req: Request, res: Response) => {
-  const { hostId, match_info } = req.body;
-  const result = matchService.createMatch(hostId, match_info);
+  const { match_info } = req.body;
+  const result = matchService.createMatch(match_info);
 
   res.json({ message: "Match created", ...result });
 };
 
 export const cancelMatch = (req: Request, res: Response) => {
-  const { matchId } = req.body;
+  const { gameCode } = req.body;
 
-  const result = matchService.cancelMatch(matchId);
+  const result = matchService.cancelMatch(gameCode);
 
-  res.json({ message: `Match ${matchId} canceled`, ...result });
+  res.json({ message: `Match ${gameCode} canceled`, ...result });
 };
 
 export const startMatch = (req: Request, res: Response) => {
@@ -43,11 +43,11 @@ export const swap = (req: Request, res: Response) => {
 
 // PLAYER
 export const joinMatch = (req: Request, res: Response) => {
-  const { matchId, playerId } = req.body;
+  const { gameCode, playerId } = req.body;
 
-  const result = matchService.joinMatch(matchId, playerId);
+  const result = matchService.joinMatch(gameCode, playerId);
 
-  res.json({ message: `Player ${playerId} joined match ${matchId}`, ...result });
+  res.json({ message: `Player ${playerId} joined match ${gameCode}`, ...result });
 };
 
 export const leaveMatch = (req: Request, res: Response) => {

@@ -2,19 +2,14 @@ import AnimatedScreen from '@/components/animated/AnimatedScreen';
 import HostForm from '@/components/match/HostForm';
 import { useTheme } from '@/hooks/useTheme';
 import PageHeader from '../custom/PageHeader';
+import { MatchInfo } from '@shared/types';
 
 interface Props {
-  hostForm: {
-    name: string;
-    location: string;
-    time: string;
-    players_count: number;
-    maxPlayers: number;
-  };
+  hostForm: MatchInfo,
   onNameChange: (text: string) => void;
   onLocationChange: (text: string) => void;
-  onTimeChange: (text: string) => void;
-  onFormationChange: (value: string) => void;
+  onTimeChange: (date: Date) => void;
+  onFormationChange: (value: number) => void;
   onCreateMatch: () => void;
   onClose: () => void;
 }

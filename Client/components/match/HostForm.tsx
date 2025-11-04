@@ -1,29 +1,31 @@
 import CustomButton from '@/components/custom/CustomButton';
 import CustomInput from '@/components/custom/CustomInput';
-import CustomSelect from '@/components/custom/CustomSelect';
 import { typography } from '@/constants/typography';
 import { useTheme } from '@/hooks/useTheme';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Calendar, Target, X } from 'lucide-react-native';
 import { useState } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import AgeInput from '../custom/NumericInput';
+import { MatchInfo } from '@shared/types';
+
 interface Props {
-  hostForm: {
-    name: string;
-    location: string;
-    time: string;
-    players_count: number;
-    maxPlayers: number;
-  };
+  hostForm: MatchInfo;
   onNameChange: (text: string) => void;
   onLocationChange: (text: string) => void;
-  onTimeChange: (text: string) => void;
-  onFormationChange: (value: string) => void;
+  onTimeChange: (date: Date) => void;
+  onFormationChange: (value: number) => void;
   onCreateMatch: () => void;
   onClose: () => void;
 }
 
-// Component
 export default function HostForm({
   hostForm,
   onNameChange,
@@ -31,53 +33,59 @@ export default function HostForm({
   onTimeChange,
   onFormationChange,
   onCreateMatch,
-  onClose
+  onClose,
 }: Props) {
   const { colors } = useTheme();
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedTime, setSelectedTime] = useState(new Date());
 
-  // Helper functions
-  const formatDate = (date: Date) => {
-    const weekday = date.toLocaleDateString('en-US', { weekday: 'long' });
-    const dd = String(date.getDate()).padStart(2, '0');
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const yyyy = date.getFullYear();
-    return `${weekday} - ${dd}/${mm}/${yyyy}`;
+  const [showDateTimePicker, setShowDateTimePicker] = useState<
+    boolean | 'date' | 'time'
+  >(false);
+  const [pendingDate, setPendingDate] = useState<Date | null>(null);
+
+  // Open the picker
+  const openDateTimePicker = () => {
+    if (Platform.OS === 'ios') {
+      setShowDateTimePicker(true);
+    } else {
+      setShowDateTimePicker('date');
+    }
   };
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    });
+  // iOS handler
+  const handleIOSChange = (event: any, selectedDate?: Date) => {
+    if (selectedDate) onTimeChange(selectedDate);
   };
 
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    setShowDatePicker(Platform.OS === 'ios');
+  // Android date handler
+  const handleAndroidDateChange = (event: any, selectedDate?: Date) => {
+    if (event.type === 'dismissed') {
+      setShowDateTimePicker(false);
+      return;
+    }
     if (selectedDate) {
-      setSelectedDate(selectedDate);
-      const combinedDateTime = `${formatDate(selectedDate)} | ${formatTime(selectedTime)}`;
-      onTimeChange(combinedDateTime);
-      if (Platform.OS === 'android') {
-        setTimeout(() => setShowTimePicker(true), 100);
-      }
+      setPendingDate(selectedDate);
+      setShowDateTimePicker('time');
     }
   };
 
-  const handleTimeChange = (event: any, selectedTime?: Date) => {
-    setShowTimePicker(Platform.OS === 'ios');
-    if (selectedTime) {
-      setSelectedTime(selectedTime);
-      const combinedDateTime = `${formatDate(selectedDate)} | ${formatTime(selectedTime)}`;
-      onTimeChange(combinedDateTime);
+  // Android time handler
+  const handleAndroidTimeChange = (event: any, selectedTime?: Date) => {
+    setShowDateTimePicker(false);
+    if (selectedTime && pendingDate) {
+      const combined = new Date(pendingDate);
+      combined.setHours(selectedTime.getHours());
+      combined.setMinutes(selectedTime.getMinutes());
+      combined.setSeconds(selectedTime.getSeconds());
+      onTimeChange(combined);
     }
+    setPendingDate(null);
   };
 
-  const isFormValid = hostForm.name.trim() && hostForm.location.trim() && hostForm.time.trim() && hostForm.players_count;
+  const isFormValid =
+    hostForm.name.trim() &&
+    hostForm.location.trim() &&
+    hostForm.date &&
+    hostForm.capacity;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -92,7 +100,11 @@ export default function HostForm({
             <TouchableOpacity onPress={onClose} style={styles.backButton}>
               <X size={24} color={colors.foreground} />
             </TouchableOpacity>
-            <Text style={[styles.hostFormTitle, { color: colors.foreground }]}>Enter Match Details</Text>
+
+            <Text style={[styles.hostFormTitle, { color: colors.foreground }]}>
+              Enter Match Details
+            </Text>
+
             <View style={{ width: 24 }} />
           </View>
 
@@ -103,48 +115,48 @@ export default function HostForm({
 
             <View style={styles.formFields}>
               <CustomInput
-                key="match-name"
                 placeholder="Match Name"
                 type="text"
                 value={hostForm.name}
                 onChangeText={onNameChange}
                 style={styles.input}
               />
+
               <CustomInput
-                key="match-location"
                 placeholder="Location"
                 type="text"
                 value={hostForm.location}
                 onChangeText={onLocationChange}
                 style={styles.input}
               />
+
+              {/* Unified Date + Time Picker */}
               <TouchableOpacity
-                style={[styles.dateTimeButton, {
-                  backgroundColor: colors.accent,
-                  borderColor: colors.border,
-                }]}
-                onPress={() => setShowDatePicker(true)}
+                style={[
+                  styles.dateTimeButton,
+                  { backgroundColor: colors.accent, borderColor: colors.border },
+                ]}
+                onPress={openDateTimePicker}
               >
                 <Calendar size={20} color={colors.muted} />
                 <Text style={[styles.dateTimeText, { color: colors.foreground }]}>
-                  {hostForm.time || 'Select Date & Time'}
+                  {hostForm.date
+                    ? `${hostForm.date.toLocaleDateString()} | ${hostForm.date.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}`
+                    : 'Select Date & Time'}
                 </Text>
               </TouchableOpacity>
-              <CustomSelect
-                key="match-formation"
-                placeholder="Select Formation"
-                values={[
-                  { label: '5v5', value: '5' },
-                  { label: '6v6', value: '6' },
-                  { label: '7v7', value: '7' },
-                  { label: '8v8', value: '8' },
-                  { label: '9v9', value: '9' },
-                  { label: '10v10', value: '10' },
-                  { label: '11v11', value: '11' },
-                ]}
-                onValueChange={onFormationChange}
-                selectedValue={hostForm.players_count ? hostForm.players_count.toString() : undefined}
-                style={styles.input}
+
+              <AgeInput
+                value={hostForm.capacity}
+                placeHolder="Range"
+                unit="Players"
+                min={10}
+                max={22}
+                step={2}
+                onChangeValue={onFormationChange}
               />
             </View>
           </View>
@@ -157,43 +169,42 @@ export default function HostForm({
         </View>
       </ScrollView>
 
-      {showDatePicker && (
+      {/* Pickers */}
+      {Platform.OS === 'ios' && showDateTimePicker && (
         <DateTimePicker
-          value={selectedDate}
-          mode="date"
+          value={hostForm.date || new Date()}
+          mode="datetime"
           display="default"
-          onChange={handleDateChange}
+          onChange={handleIOSChange}
         />
       )}
 
-      {showTimePicker && (
+      {Platform.OS === 'android' && showDateTimePicker === 'date' && (
         <DateTimePicker
-          value={selectedTime}
+          value={pendingDate || hostForm.date || new Date()}
+          mode="date"
+          display="default"
+          onChange={handleAndroidDateChange}
+        />
+      )}
+
+      {Platform.OS === 'android' && showDateTimePicker === 'time' && (
+        <DateTimePicker
+          value={hostForm.date || new Date()}
           mode="time"
           display="default"
-          onChange={handleTimeChange}
+          onChange={handleAndroidTimeChange}
         />
       )}
     </View>
   );
 }
 
-// Styles
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollContainer: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingBottom: 120, // Extra padding for tab bar
-  },
-  hostFormContainer: {
-    flex: 1,
-    paddingTop: 60,
-  },
+  container: { flex: 1 },
+  scrollContainer: { flex: 1 },
+  scrollContent: { flexGrow: 1, paddingBottom: 120 },
+  hostFormContainer: { flex: 1, paddingTop: 60 },
   hostFormHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -201,9 +212,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 20,
   },
-  backButton: {
-    padding: 8,
-  },
+  backButton: { padding: 8 },
   hostFormTitle: {
     fontSize: 20,
     fontFamily: typography.fontFamily.jetbrainsMonoBold,
@@ -223,13 +232,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
-  formFields: {
-    width: '100%',
-    gap: 16,
-  },
-  input: {
-    width: '100%',
-  },
+  formFields: { width: '100%', gap: 16 },
+  input: { width: '100%' },
   dateTimeButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -240,10 +244,7 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: 10,
   },
-  dateTimeText: {
-    fontSize: 16,
-    flex: 1,
-  },
+  dateTimeText: { fontSize: 16, flex: 1 },
   hostFormFooter: {
     paddingTop: 20,
     paddingHorizontal: 24,

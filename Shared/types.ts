@@ -63,24 +63,21 @@ export interface MatchInfo {
   name: string;
   location: string;
   date: Date;
-  time: string;
   capacity: number;
-  formation: string;
 }
+export type PositionsCapacities = { [key in Position]: number };
 export interface Match {
   name: string;
   location: string;
   date: Date;
-  time: string;
   capacity: number;
-  formation: string;
+  formation: PositionsCapacities;
 
-  code: number;
+  code: string;
   count: number;
   started: boolean;
   teams: Team[];
 }
-export type PositionsCapacities = { [key in Position]: number };
 export interface Badge {
   label: string;
   level: number;

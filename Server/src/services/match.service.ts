@@ -5,7 +5,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 const generatedCodes = new Set<number>();
 
-export const createMatch = async (hostId: string, match_information: MatchInfo) => {
+export const createMatch = async (match_information: MatchInfo) => {
     const team1: Team = {name: "First", color: "BLUE", players: new Array(match_information.capacity/2).fill({"id": "EMPTY"})}
     const team2: Team = {name: "Second", color: "RED", players: new Array(match_information.capacity/2).fill({"id": "EMPTY"})}
     const code = generateMatchCode()
@@ -13,38 +13,37 @@ export const createMatch = async (hostId: string, match_information: MatchInfo) 
         name: match_information.name,
         location: match_information.location,
         date: match_information.date,
-        time: match_information.time,
         capacity: match_information.capacity,
-        formation: match_information.formation,
-        code: code,
+        formation: formationPositionsMap[match_information.capacity],
+        code: code.toString(),
         count: 0,
         started: false,
         teams: [team1, team2]
     }
     const matchRef = getRealtimeRef(`MATCH/${code}`)
     await set(matchRef, match)
-    return { hostId, match_information, status: "created" };
+    return { match_information, status: "created" };
 };
 
-export const cancelMatch = async (matchId: string) => {
-    const matchRef = getRealtimeRef(`MATCH/${matchId}`)
+export const cancelMatch = async (gameCode: string) => {
+    const matchRef = getRealtimeRef(`MATCH/${gameCode}`)
     await remove(matchRef)
-    return { matchId, status: "canceled" };
+    return { gameCode, status: "canceled" };
 };
 
-export const startMatch = async (matchId: string) => {
-    const matchRef = getRealtimeRef(`MATCH/${matchId}`)
+export const startMatch = async (gameCode: string) => {
+    const matchRef = getRealtimeRef(`MATCH/${gameCode}`)
     await update(matchRef, {started: true})
-    return { matchId, status: "started" };
+    return { gameCode, status: "started" };
 };
 
-export const endMatch = (matchId: string) => {
+export const endMatch = (gameCode: string) => {
     // TODO Generate & Send Surveys
-    return { matchId, status: "ended" };
+    return { gameCode, status: "ended" };
 };
 
-export const swap = async (playerId1: string, playerId2: string, matchId: string) => {
-    const teamsRef = getRealtimeRef(`MATCH/${matchId}/teams`)
+export const swap = async (playerId1: string, playerId2: string, gameCode: string) => {
+    const teamsRef = getRealtimeRef(`MATCH/${gameCode}/teams`)
     const teamsSnap = (await get(teamsRef)).val() as Team[]
 
     const team1Player = teamsSnap[0].players.find(p => p.id == playerId1 || p.id == playerId2)
@@ -66,24 +65,25 @@ export const swap = async (playerId1: string, playerId2: string, matchId: string
     return { playerId1, playerId2, status: "Swapped" };
 }
 
-export const submitSurvey = (matchId: string, playerId: string, answers: any) => {
+export const submitSurvey = (gameCode: string, playerId: string, answers: any) => {
     // TODO Update Players Ratings Accordnigly
-    return { matchId, playerId, answers, status: "submitted" };
+    return { matchId: gameCode, playerId, answers, status: "submitted" };
 };
-export const joinMatch = async (matchId: string, playerId: string) => {
-    const matchRef = getRealtimeRef(`MATCH/${matchId}`)
+export const joinMatch = async (gameCode: string, playerId: string) => {
+    console.log(gameCode, playerId)
+    const matchRef = getRealtimeRef(`MATCH/${gameCode}`)
     const matchSnap = await get(matchRef)
 
     const playerRef = doc(firestoreDB, "players", playerId)
     const player = await getPlayerById(playerId)
     if (!matchSnap.exists() || !player)
-        return { matchId, playerId, status: "Failed To Join: Match/ Player Couldn't Be Found!" };
+        return { gameCode: gameCode, playerId, status: "Failed To Join: Match/ Player Couldn't Be Found!" };
 
     const count = matchSnap.child("count").val()
     const capacity = matchSnap.child("capacity").val()
 
     if (count + 1 > capacity)
-        return { matchId, playerId, status: "Failed To Join: No Empty Spot Left!" };
+        return { gameCode: gameCode, playerId, status: "Failed To Join: No Empty Spot Left!" };
 
     const newPlayer: TeamPlayer = { id: player.id,
         name: player.name,
@@ -94,44 +94,43 @@ export const joinMatch = async (matchId: string, playerId: string) => {
         position: Position.FWD, // Will Be Overwritten For Sure.
     }
 
-    const teamsRef = getRealtimeRef(`MATCH/${matchId}/teams`)
+    const teamsRef = getRealtimeRef(`MATCH/${gameCode}/teams`)
     const teams = matchSnap.child("teams").val()
 
     const formation = matchSnap.child("formation").val()
-    const positionsCapacities = formationPositionsMap[formation]
 
-    const updatedTeams = await updateLineUp(newPlayer, teams, positionsCapacities)
+    const updatedTeams = await updateLineUp(newPlayer, teams, formation)
     await set(teamsRef, updatedTeams)
 
-    const countRef = getRealtimeRef(`MATCH/${matchId}/count`)
+    const countRef = getRealtimeRef(`MATCH/${gameCode}/count`)
     await set(countRef, count + 1)
 
     await updateDoc(playerRef,
         {
-            matchCode: matchId
+            matchCode: gameCode
         }
     );
 
-    return { matchId, playerId, status: "Joined" };
+    return { matchId: gameCode, playerId, status: "Joined" };
 };
-export const leaveMatch = async (matchId: string, playerId: string) => {
-    const matchRef = getRealtimeRef(`MATCH/${matchId}`)
+export const leaveMatch = async (gameCode: string, playerId: string) => {
+    const matchRef = getRealtimeRef(`MATCH/${gameCode}`)
     const matchSnap = await get(matchRef)
 
     const playerRef = doc(firestoreDB, "players", playerId)
     const player = await getPlayerById(playerId)
 
     if (!matchSnap.exists() || !player || player.matchCode == "NONE")
-        return { matchId, playerId, status: "Failed To Leave: Match/ Player Couldn't Be Found!" };
+        return { matchId: gameCode, playerId, status: "Failed To Leave: Match/ Player Couldn't Be Found!" };
 
     const teams = matchSnap.child("teams").val() as Team[]
     teams[0].players = teams[0].players.filter(p => p.id != playerId);
     teams[1].players = teams[1].players.filter(p => p.id != playerId);
 
-    const teamsRef = getRealtimeRef(`MATCH/${matchId}/teams`)
+    const teamsRef = getRealtimeRef(`MATCH/${gameCode}/teams`)
     await set(teamsRef, teams)
 
-    const countRef = getRealtimeRef(`MATCH/${matchId}/count`)
+    const countRef = getRealtimeRef(`MATCH/${gameCode}/count`)
     const prevCount = (await get(countRef)).val()
     await set(countRef, prevCount - 1)
 
@@ -140,7 +139,7 @@ export const leaveMatch = async (matchId: string, playerId: string) => {
             matchCode: "NONE"
         }
     );
-    return { matchId, playerId, status: "left" };
+    return { gameCode: gameCode, playerId, status: "left" };
 };
 
 function generateMatchCode(){
@@ -165,44 +164,44 @@ async function updateLineUp(player: TeamPlayer, teams: Team[], positionsCapaciti
     }
     return teams
 }
-const formationPositionsMap: {[formation: string]: PositionsCapacities} = {
-  "2 2": {
+const formationPositionsMap: {[capacity: number]: PositionsCapacities} = {
+  10: {
     [Position.GK]: 1,
     [Position.DEF]: 2,
     [Position.MID]: 0,
     [Position.FWD]: 2
   },
-  "2 1 2": {
+  12: {
     [Position.GK]: 1,
     [Position.DEF]: 2,
     [Position.MID]: 1,
     [Position.FWD]: 2
   },
-    "3 2 1": {
+    14: {
     [Position.GK]: 1,
     [Position.DEF]: 3,
     [Position.MID]: 2,
     [Position.FWD]: 1
   },
-    "3 2 2": {
+    16: {
     [Position.GK]: 1,
     [Position.DEF]: 3,
     [Position.MID]: 2,
     [Position.FWD]: 2
   },
-    "4 2 2": {
+    18: {
     [Position.GK]: 1,
     [Position.DEF]: 4,
     [Position.MID]: 2,
     [Position.FWD]: 2
   },
-    "4 3 2": {
+    20: {
     [Position.GK]: 1,
     [Position.DEF]: 4,
     [Position.MID]: 3,
     [Position.FWD]: 2
   },
-    "4 3 3": {
+    22: {
     [Position.GK]: 1,
     [Position.DEF]: 4,
     [Position.MID]: 3,
@@ -263,8 +262,6 @@ async function setPlayerPosition(player: TeamPlayer, position: Position, teamPla
     }
 
     const replaceable = teamPlayers.find(p => p.id != "EMPTY" && p.positions[position] < player.positions[position])
-    console.log(replaceable)
-    console.log(newPlayer)
     if (!replaceable)
         return false
 

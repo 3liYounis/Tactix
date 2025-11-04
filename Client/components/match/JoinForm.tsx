@@ -8,9 +8,9 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 
 interface Props {
   joinForm: {
-    gameCode: string;
+    gameCode: number;
   };
-  onGameCodeChange: (text: string) => void;
+  onGameCodeChange: (code: number) => void;
   onJoinMatch: () => void;
   onClose: () => void;
 }
@@ -49,7 +49,7 @@ export default function JoinForm({
               <CustomInput
                 key="join-game-code"
                 placeholder="Enter Game Code"
-                value={joinForm.gameCode}
+                value={joinForm.gameCode.toString()}
                 onChangeText={onGameCodeChange}
                 style={styles.input} type={'number'}              />
             </View>
