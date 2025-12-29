@@ -1,5 +1,39 @@
 # Tactix - Football Match Management App
+---
 
+## 📱 Application Showcase
+
+<div align="center">
+
+<h3>Team Dashboard</h3>
+<p>Overview of team performance and upcoming matches.</p>
+<img src="DEMO/Dashboard.png" width="280" style="border-radius: 30px; margin-bottom: 30px;" />
+
+<h3>Host a Match</h3>
+<p>Setup and configure new match lobbies.</p>
+<img src="DEMO/Host.png" width="280" style="border-radius: 30px; margin-bottom: 30px;" />
+
+<h3>Join a Team</h3>
+<p>Find and join existing team lobbies with ease.</p>
+<img src="DEMO/Join.png" width="280" style="border-radius: 30px; margin-bottom: 30px;" />
+
+<h3>Live Tactical Formation</h3>
+<p>Real-time tactical adjustments and player positioning.</p>
+<img src="DEMO/Live Formation.png" width="280" style="border-radius: 30px; margin-bottom: 30px;" />
+
+<h3>Match Details</h3>
+<p>Detailed information about current match status.</p>
+<img src="DEMO/MatchInformation.png" width="280" style="border-radius: 30px; margin-bottom: 30px;" />
+
+<h3>Player Profile</h3>
+<p>Individual player stats and information card.</p>
+<img src="DEMO/PlayerCard.png" width="280" style="border-radius: 30px; margin-bottom: 30px;" />
+
+<h3>Performance Statistics</h3>
+<p>In-depth analysis of player statistics.</p>
+<img src="DEMO/Statistics.png" width="280" style="border-radius: 30px; margin-bottom: 30px;" />
+
+</div>
 <div align="center">
   <!-- <img src="tactixMain/assets/images/football.png" alt="Tactix Logo" width="120" height="120"/> -->
 
@@ -65,6 +99,42 @@
 - **Google Sign-in**: One-tap authentication with Google accounts
 - **Password Recovery**: Secure password reset functionality
 - **User Profiles**: Customizable profile information and settings
+
+---
+
+## 📱 Application Showcase
+
+<div align="center">
+
+<h3>Team Dashboard</h3>
+<p>Overview of team performance and upcoming matches.</p>
+<img src="DEMO/Dashboard.png" width="280" style="border-radius: 30px; margin-bottom: 30px;" />
+
+<h3>Host a Match</h3>
+<p>Setup and configure new match lobbies.</p>
+<img src="DEMO/Host.png" width="280" style="border-radius: 30px; margin-bottom: 30px;" />
+
+<h3>Join a Team</h3>
+<p>Find and join existing team lobbies with ease.</p>
+<img src="DEMO/Join.png" width="280" style="border-radius: 30px; margin-bottom: 30px;" />
+
+<h3>Live Tactical Formation</h3>
+<p>Real-time tactical adjustments and player positioning.</p>
+<img src="DEMO/Live Formation.png" width="280" style="border-radius: 30px; margin-bottom: 30px;" />
+
+<h3>Match Details</h3>
+<p>Detailed information about current match status.</p>
+<img src="DEMO/MatchInformation.png" width="280" style="border-radius: 30px; margin-bottom: 30px;" />
+
+<h3>Player Profile</h3>
+<p>Individual player stats and information card.</p>
+<img src="DEMO/PlayerCard.png" width="280" style="border-radius: 30px; margin-bottom: 30px;" />
+
+<h3>Performance Statistics</h3>
+<p>In-depth analysis of game statistics.</p>
+<img src="DEMO/Statistics.png" width="280" style="border-radius: 30px; margin-bottom: 30px;" />
+
+</div>
 
 ---
 
